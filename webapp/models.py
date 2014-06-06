@@ -46,6 +46,18 @@ class Analytics(models.Model):
 	def __unicode__(self):
 		"%s (%s)"%(self.user.username, self.key)
 
+# Variable-form table for group analytics
+class GroupAnalytics(models.Model):
+	group = models.ForeignKey(CustomGroup)
+	key = models.CharField(max_length=100)
+	value = models.CharField(max_length=100)
+
+	class Meta:
+		unique_together = ['group', 'key']
+
+	def __unicode__(self):
+		"%s (%s)"%(self.group.name, self.key)
+
 # Usage statistics gathered from heartbeat
 class Usage(models.Model):
 	device = models.ForeignKey(Device)
