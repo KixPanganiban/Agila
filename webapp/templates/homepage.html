@@ -17,9 +17,16 @@ Agila &rarr; Home
 		<h3><span class="fa fa-code-fork"></span> Free and Open Source</h3>
 		<p>Agila is completely free to use (and reuse). You can even download the source code right now from <a href="http://github.com/kixpanganiban/agila">Github</a>. The anonymized data collected by Agila can also be accessed through the <a href="#">Agila API</a>.</p>
 	</div>
+	{% if not user.is_authenticated %}
 	<div class="col-lg-4">
 		<h3><span class="fa fa-sign-in"></span> Create An Account Now</h3>
-		<p>A Facebook account is all you need to start. <a href="javascript: $('#login-modal').modal();" class="btn btn-block btn-primary">Sign up here &rarr;</a> </p>
+		<p>A Facebook account is all you need to start. No asking for emails, no complicated sign up process. Start saving the planet now. <a href="javascript: $('#login-modal').modal();" class="btn btn-block btn-primary">Sign up here &rarr;</a> </p>
 	</div>
+	{% else %}
+	<div class="col-lg-4">
+		<h3><span class="fa fa-sign-in"></span> Sign In To Your Dashboard</h3>
+		<p>Start adding your devices and tracking your resource consumption. Help save the planet! <a href="/dashboard/" class="btn btn-block btn-primary">Go to Dashboard &rarr;</a> </p>
+	</div>
+	{% endif %}
 </div>
 {% endblock %}
