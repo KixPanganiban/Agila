@@ -10,7 +10,7 @@
 		<title>{% block title %}{% endblock %}</title>
 	</head>
 	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar navbar-inverse navbar">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
 				<span class="icon-bar"></span>
@@ -21,8 +21,8 @@
 			</div>
 			<div class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Welcome</a></li>
-					<li><a href="#">About</a></li>
+					<li><a href="#">Welcome</a></li>
+					{% if user.is_authenticated %}<li><a href="/dashboard/">Dashboard</a></li>{% endif %}
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if not user.is_authenticated %}<li><a href="javascript:$('#login-modal').modal();">Login</a></li>{% endif %}
@@ -36,6 +36,7 @@
 			{% endblock %}
 		</div>
 		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH</div>
+		{% if not user.is_authenticated %}
 		<div class="modal" id="login-modal">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -57,6 +58,7 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 	</body>
 	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>

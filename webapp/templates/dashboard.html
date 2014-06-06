@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Agila &rarr; Dashboard
+{% endblock %}
+{% block body %}
+<div class="container">
+	<h1>Dashboard</h1>
+	<ul class="breadcrumb">
+		<li><a href="#">Home</a></li>
+		<li class="active">Dashboard</li>
+	</ul>
+	<hr/>
+	<div class="row">
+		<div class="col-lg-3">
+			<h3>At a glance</h3>
+			<div class="well">
+				<strong>Your total consumption:</strong>
+				<ul>
+					<li><em>0 today</em></li>
+					<li><em>0 all-time</em></li>
+					<li><em>You rank 1st in global consumers.</em></li>
+				</ul>
+				<strong>...this translates to:</strong>
+				<p>Your carbon emission is enough to melt a glacier the size of your house.</p>
+				<p class="pull-right"><a href="#">View my usage analytics &rarr;</a></p>
+				<hr/>
+			</div>
+		</div>
+		<div class="col-lg-9">
+			<h3>Welcome, {{user}}.</h3>
+			<hr/>
+			<div class="alert alert-danger"><strong>Hey there!</strong> We've noticed that your energy consumption is above your usual. Think of all the dying kittens! <a href="#">What can I do?</a></div>
+			<h4>Your Devices</h4>
+			<table class="table table-striped table-hover">
+				<thead>
+					<th>Last Status</th>
+					<th>Device Type</th>
+					<th>Model</th>
+					<th>OS</th>
+					<th>Mac Address</th>
+					<th>Unlink</th>
+				</thead>
+				<tbody>
+					<tr>
+						<td><span class="label label-success">Tracking</span></td>
+						<td>Mobile</td>
+						<td>Apple iPhone 4S</td>
+						<th>iOS</th>
+						<th>AA:BB:CC:DD:EE:FF</th>
+						<th><a href="#" class="text-danger">Unlink</a></th>
+					</tr>
+					<tr>
+						<td><span class="label label-danger">Offline</span></td>
+						<td>Mobile</td>
+						<td>cd-r king Arizona</td>
+						<th>Android</th>
+						<th>FF:EE:DD:CC:BB:AA</th>
+						<th><a href="#" class="text-danger">Unlink</a></th>
+					</tr>
+				</tbody>
+			</table>
+			<div class="pull-right">
+				<a href="#" class="btn btn-success">Link Another One</a>
+			</div>
+			<hr/>
+			<h4>Your Communities</h4>
+			<table class="table table-striped table-hover">
+				<thead>
+					<th>Group Name</th>
+					<th>Members</th>
+					<th>Total Consumption</th>
+					<th>Global Rank</th>
+				</thead>
+				<tbody>
+					<th>UP Diliman</th>
+					<th>1,024</th>
+					<th>55.33 mWh</th>
+					<th>1st</th>
+				</tbody>
+			</table>
+			<div class="pull-right">
+				<a href="#" class="btn btn-success">Join Another One</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
