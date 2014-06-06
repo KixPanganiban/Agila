@@ -26,7 +26,7 @@ def run():
     um = UsageManager()
     y = getUptime()
     um.update(Usage.create(y))
-
+    um.sync()
     #save the created instance using cPickle
 
 if __name__ == '__main__':
