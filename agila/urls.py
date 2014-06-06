@@ -6,7 +6,8 @@ admin.autodiscover()
 
 api_router = DefaultRouter()
 api_router.register(r'devices', api_views.DeviceViewSet, base_name='device')
-api_router.register(r'usages', api_views.UsageViewSet)
+api_router.register(r'usages', api_views.UsageViewSet, base_name='usage')
+api_router.register(r'analytics', api_views.AnalyticsViewSet, base_name='analytics')
 
 urlpatterns = patterns('',
 	url(r'^api/', include(api_router.urls)),
