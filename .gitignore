@@ -1,0 +1,3 @@
+*.pyc
+agila/*.pyc
+webapp/*.pyc

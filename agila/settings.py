@@ -82,8 +82,8 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'
-FACEBOOK_APP_ID = '719210384809778'
-FACEBOOK_APP_SECRET = 'c8bb4b7c3d2b391c249cd10678564ea7'
+FACEBOOK_APP_ID = '702303806446281'
+FACEBOOK_APP_SECRET = 'ee2a881823f96c2825735b6dddef50e9'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
