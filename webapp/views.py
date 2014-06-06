@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, render_to_response
+import django_facebook
 
 def homepage(request):
-	return render(request, "base.html")
+	return render(request, "homepage.html")

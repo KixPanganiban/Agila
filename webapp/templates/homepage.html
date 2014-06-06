@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Agila &rarr; Home
+{% endblock %}
+{% block body %}
+<div class="jumbotron">
+	<h1>Agila</h1>
+	<p>Agila helps you track and visualize your carbon footprint and energy use. Forms groups, join communities, and help raise awareness about climate change: one device at a time.</p>
+</div>
+<div class="row">
+	<div class="col-lg-4">
+		<h3><span class="fa fa-cogs"></span> How It Works</h3>
+		<p>Sign up for a free Agila account using your Facebook, register your devices, download the small tracking app, and start tracking immediately. Agila currently supports all desktop platforms and Android. iOS support coming soon.</p>
+	</div>
+	<div class="col-lg-4">
+		<h3><span class="fa fa-code-fork"></span> Free and Open Source</h3>
+		<p>Agila is completely free to use (and reuse). You can even download the source code right now from <a href="http://github.com/kixpanganiban/agila">Github</a>. The anonymized data collected by Agila can also be accessed through the <a href="#">Agila API</a>.</p>
+	</div>
+	<div class="col-lg-4">
+		<h3><span class="fa fa-sign-in"></span> Create An Account Now</h3>
+		<p>A Facebook account is all you need to start. <a href="/register/" class="btn btn-block btn-primary">Sign up here &rarr;</a> </p>
+	</div>
+</div>
+{% endblock %}
