@@ -1,0 +1,313 @@
+#-*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+require 'guard/guard'
+require 'json'
+
+config = JSON.load File.new 'config.json'
+
+# NOTE: when editing this file, particularly to add new guards,
+# you may need to update the Rakefile accordingly.
+
+module ::Guard
+  # Copyright (c) 2010-2012 Michael Kessler
+  # 
+  # Permission is hereby granted, free of charge, to any person obtaining
+  # a copy of this software and associated documentation files (the
+  # "Software"), to deal in the Software without restriction, including
+  # without limitation the rights to use, copy, modify, merge, publish,
+  # distribute, sublicense, and/or sell copies of the Software, and to
+  # permit persons to whom the Software is furnished to do so, subject to
+  # the following conditions:
+  # 
+  # The above copyright notice and this permission notice shall be
+  # included in all copies or substantial portions of the Software.
+  # 
+  # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  # NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+  # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+  # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  # Collects console and system notification methods and enhances them with
+  # some color information.
+  module Formatter class << self
+
+      # Print an info message to the console.
+      #
+      # @param [String] message the message to print
+      # @param [Hash] options the output options
+      # @option options [Boolean] :reset reset the UI
+      #
+      def info(message, options = { })
+        ::Guard::UI.info(message, options)
+      end
+
+      # Print a debug message to the console.
+      #
+      # @param [String] message the message to print
+      # @param [Hash] options the output options
+      # @option options [Boolean] :reset reset the UI
+      #
+      def debug(message, options = { })
+        ::Guard::UI.debug(message, options)
+      end
+
+      # Print a red error message to the console.
+      #
+      # @param [String] message the message to print
+      # @param [Hash] options the output options
+      # @option options [Boolean] :reset reset the UI
+      #
+      def error(message, options = { })
+        ::Guard::UI.error(color(message, ';31'), options)
+      end
+
+      # Print a green success message to the console.
+      #
+      # @param [String] message the message to print
+      # @param [Hash] options the output options
+      # @option options [Boolean] :reset reset the UI
+      #
+      def success(message, options = { })
+        stamped_message = "#{Time.now.strftime('%r')} #{message}"
+        ::Guard::UI.info(color(stamped_message, ';32'), options)
+      end
+
+      # Outputs a system notification.
+      #
+      # @param [String] message the message to print
+      # @param [Hash] options the output options
+      # @option options [Symbol, String] :image the image to use, either :failed, :pending or :success, or an image path
+      # @option options [String] :title the title of the system notification
+      #
+      def notify(message, options = { })
+        ::Guard::Notifier.notify(message, options)
+      end
+
+      private
+
+      # Print a info message to the console.
+      #
+      # @param [String] text the text to colorize
+      # @param [String] color_code the color code
+      #
+      def color(text, color_code)
+        ::Guard::UI.send(:color_enabled?) ? "\e[0#{ color_code }m#{ text }\e[0m" : text
+      end
+
+    end
+  end
+  module GuardHelpers
+
+    ## Helper methods
+    
+    # Copyright (c) 2010-2012 Michael Kessler
+    # 
+    # Permission is hereby granted, free of charge, to any person obtaining
+    # a copy of this software and associated documentation files (the
+    # "Software"), to deal in the Software without restriction, including
+    # without limitation the rights to use, copy, modify, merge, publish,
+    # distribute, sublicense, and/or sell copies of the Software, and to
+    # permit persons to whom the Software is furnished to do so, subject to
+    # the following conditions:
+    # 
+    # The above copyright notice and this permission notice shall be
+    # included in all copies or substantial portions of the Software.
+    # Detects the output directory for each CoffeeScript file. Builds
+    # the product of all watchers and assigns to each directory
+    # the files to which it belongs to.
+    #
+    # @param [Array<Guard::Watcher>] watchers the Guard watchers in the block
+    # @param [Array<String>] files the CoffeeScript files
+    # @param [Hash] options the options for the execution
+    # @option options [String] :output the output directory
+    # @option options [Boolean] :shallow do not create nested directories
+    #
+    def detect_nested_directories(watchers, files, options)
+      return { options[:output] => files } if options[:shallow]
+
+      directories = { }
+
+      watchers.product(files).each do |watcher, file|
+        if matches = file.match(watcher.pattern)
+          target = matches[1] ? File.join(options[:output], File.dirname(matches[1])).gsub(/\/\.$/, '') : options[:output] || File.dirname(file)
+          if directories[target]
+            directories[target] << file
+          else
+            directories[target] = [file]
+          end
+        end
+      end
+
+      directories
+    end
+    # End of copyrighted code
+
+    # mtime checking borrowed from the old official LESS Rails plugin:
+    #    https://github.com/cloudhead/more
+    def mtime(file)
+      return 0 unless File.file?(file)
+      File.mtime(file).to_i
+    end
+
+    ## Defaults
+    # Calls #run_all if the :all_on_start option is present.
+    def start
+      run_all if options[:all_on_start]
+    end
+
+    # Call #run_on_change for all files which match this guard.
+    def run_all
+      run_on_changes(Watcher.match_files(self, Dir.glob('**{,/*/**}/*').uniq.compact))
+    end
+
+    def target_filename(directory, file)
+      File.join(directory, File.basename(file))
+    end
+
+    def run_on_removals(paths)
+      # Do nothing
+    end
+
+    def act_on(directory, file)
+      raise NotImplementedError.new('act_on not implemented')
+    end
+
+    def error(path)
+      message = "#{self.class.name} ERROR: #{path}"
+      Formatter.error message
+      Formatter.notify message, :image => :failed
+    end
+
+    def notify(paths)
+      message = if paths.length <= 8
+        "#{self.class.name} SUCCESS: #{paths.join(', ')}" 
+      else 
+        "#{self.class.name} SUCCESS: #{paths[0..7].join(', ')}, and others." 
+      end
+      Formatter.success message
+      Formatter.notify message, :image => :success
+    end
+
+    def run_on_changes(paths)
+      # Exclude those in exclude, and  only copy files
+      paths = paths.select {|path| not options[:exclude] =~ path and File.file? path}
+
+      directories = detect_nested_directories(watchers, paths, options)
+      written = []
+
+      directories.each do |directory, files|
+        files.each do |file|
+          if act_on(directory, file)
+            written << file
+          else
+            error(file)
+            throw :task_has_failed
+          end
+        end
+      end
+      if written.length > 0
+        notify(written)
+      end
+    end
+  end
+  # Simply copies things
+  # Optionally, can also optimize images on the fly!
+  class Copier < ::Guard::Guard
+    include GuardHelpers
+
+    def act_on(directory, file)
+      target = target_filename(directory, file)
+      FileUtils.mkdir_p(directory)
+      
+      if options[:optimize_images]
+        # Optimize images
+        if file.end_with? '.png'
+          # TODO: Say explicitly that optimization failed
+          if system("optipng -out '#{target}' '#{file}' > /dev/null 2>&1")
+            return file
+          end
+        elsif file.end_with? '.jpg', '.jpeg'
+          if system("jpegtran -copy none -optimize -progressive '#{file}' > '#{target}' 2>/dev/null")
+            return file
+          end
+        end
+      end
+      FileUtils.copy_file(file, target, :preserve => true)
+      file
+    end
+  end
+
+  # Compiles jade files
+  class Jade < ::Guard::Guard
+    include GuardHelpers
+
+    def target_filename(directory, file)
+      File.join(directory, File.basename(file).sub(/(\.html)?\.jade$/, '.html'))
+    end
+
+    def act_on(directory, file)
+      target = target_filename(directory, file)
+      FileUtils.mkdir_p(File.dirname(target))
+
+      options[:env] ||= ENV['ENV']
+      env_str = options[:env] ? "--env #{options[:env]}" : ''
+      
+      if system("./node_modules/coffee-script/bin/coffee scripts/compile_jade.coffee #{env_str} --in #{file} --out #{target}")
+        mtime = File.mtime(file)
+        File.utime(mtime, mtime, file)
+        file
+      else
+        nil
+      end
+    end
+  end
+end
+
+main_projects = config['mainProjects']
+test_projects = config['testProjects']
+projects = main_projects + test_projects
+
+guard 'shell' do
+  watch(%r{^config.json$|.+\.(coffee|js|s[ac]ss)$}) do
+    system("touch src/index.jade")
+  end
+end
+
+# Jade
+guard 'jade', :all_on_start => true, :output => "build/" do
+  watch(%r{^src/(assets/[^/]+/templates/.+\.jade$)})
+  watch(%r{^src/(index\.jade$)})
+end
+# End Jade
+
+# CoffeeScript
+guard 'coffeescript', :output => 'build', :all_on_start => true, :error_to_js => true do
+  watch(%r{^src/(assets/[^/]+/(?:js|lib)/.+\.coffee$)})
+end
+# End CoffeeScript
+
+
+# Copier
+# anything that isn't a .coffee or .less file should be copied across
+# Images can optionally be optimized
+guard 'copier', :exclude => %r{^src/.+\.(coffee|less|jade|s[ac]ss|hx|hxml)$}, :optimize_images => true,
+    :all_on_start => true, :force => true, :output => 'build' do
+  watch(%r{^src/(.+)})
+end
+# End Copier
+
+guard 'shell' do
+  watch(%r{src/assets/shared/swf/.+[.]hx$}) do
+    system("cd src/assets/shared/swf && haxe compile.hxml")
+  end
+end
+
+ignore %r{\.nfs\h+}, %r{\.swp$}, %r{~$}, %r{\.(LOCAL|REMOTE|BASE|BACKUP)\.}
+
+# notification :gntp, :host => '127.0.0.1', :password  => 'MyKoalaBear!'
+# notification :gntp, :host => '172.16.0.1', :password => 'MyKoalaBear!'
+
+interactor :off

@@ -1,0 +1,28 @@
+source 'https://rubygems.org'
+
+# Guard
+gem 'guard'
+group :development do
+  # Filesystem
+  # inotify doesn't detect changes to shared folders. Let's force it to poll
+  gem 'rb-inotify', '~> 0.8.8', :require => false
+  gem 'rb-fsevent', :require => false
+  gem 'rb-fchange', :require => false
+  # Notification
+  gem 'ruby_gntp', :require => false
+  gem 'terminal-notifier-guard', :require => false
+  gem 'libnotify', :require => false
+  # Guard Plugins
+  gem 'guard-coffeescript'
+ # gem 'guard-less', :git => 'git://github.com/TimDumol/guard-less.git', :ref => 'd93e4e4ac91e'
+  gem 'guard-shell'
+  #gem 'guard-less'
+end
+
+gem 'json'
+gem 'rake'
+gem 'coffee-script'
+gem 'sass'
+gem 'compass'
+gem 'less'
+

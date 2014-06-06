@@ -1,0 +1,44 @@
+{
+  "siteName": "Agila",
+  "mainProjects": [
+    "main"
+  ],
+  "testProjects": [],
+  "js": {
+    "libraries": {
+      "main": [
+        {
+          "minify": true,
+          "path": "angular/angular.js"
+        },
+        {
+          "minify": true,
+          "path": "angular/angular-sanitize.js"
+        },
+        {
+          "minify": true,
+          "path": "angular/angular-resource.js"
+        },
+        {
+          "minify": true,
+          "path": "angular/angular-route.js"
+        },
+        {
+          "minify": true,
+          "path": "angular/angular-animate.js"
+        },
+        {
+          "minify": true,
+          "path": "underscore-min.js"
+        },
+        {
+          "minify": true,
+          "path": "html-sanitizer-minified.js"
+        }
+      ]
+    },
+    "shared": {
+      "main": "*"
+    }
+  }  
+}

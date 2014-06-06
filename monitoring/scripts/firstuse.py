@@ -22,6 +22,7 @@ def run():
 			data = urllib.urlopen(url,encoded)
 			reponse = json.loads(data.read())
 			if reponse['status'] != 'invalid_token':
+				print "Successfully initiated device"
 				break
 			elif reponse['status'] != 'invalid':
 				print "Error occured"

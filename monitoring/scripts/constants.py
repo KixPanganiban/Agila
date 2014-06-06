@@ -1,3 +1,3 @@
 # constants.py
 
-SERVER = 'localhost:8000'
+SERVER = 'agila.tk'
