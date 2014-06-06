@@ -1,3 +1,4 @@
 *.pyc
 agila/*.pyc
 webapp/*.pyc
+db.sqlite3

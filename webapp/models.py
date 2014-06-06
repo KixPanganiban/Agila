@@ -1,20 +1,44 @@
-from django.db import models
+from django.db import models, transaction
 from agila import settings
 
 # Devices registered to user
 class Device(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	mac = models.CharField(max_length=20)						
-	device = models.CharField(max_length=100, null=True)		
-	model = models.CharField(max_length=100, null=True)			
-	os = models.CharField(max_length=100, null=True)			
+	device = models.CharField(max_length=100, null=True)
+	model = models.CharField(max_length=100, null=True)		
+	os = models.CharField(max_length=100, null=True)		
 	dump = models.TextField(null=True)
 
 	class Meta:
 		unique_together = ['user', 'mac']
 
 	def __unicode__(self):
-		return self.model
+		return self.mac
+
+	#@transaction.atomic
+	@classmethod
+	def dt_to_device(cls,dt,mac,os):
+		"""DeviceToken to device"""
+		d = cls(user=dt.user,mac=mac,os=os)
+		d.save()
+
+		dt.delete()
+		print "device to dt"
+
+class DeviceToken(models.Model):
+	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	token = models.CharField(max_length=6,unique=True)
+
+	@classmethod
+	def generate(cls,user):
+		def randToken(len):
+			import random
+			return ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(len))
+
+		new_token = cls(user=user,token=randToken(6))
+		new_token.save()
+		return new_token.token
 
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):
@@ -49,7 +73,21 @@ class Analytics(models.Model):
 # Usage statistics gathered from heartbeat
 class Usage(models.Model):
 	device = models.ForeignKey(Device)
-	datetime_received = models.DateTimeField(auto_now_add=True)
-	datetime_sent = models.DateTimeField()
+	datetime = models.DateTimeField()
 	load = models.CharField(max_length=100)
 	uptime = models.CharField(max_length=20)
+
+	def __unicode__(self):
+		return "%s %s %s"%(self.device.user.username, self.load, self.datetime)
+
+	@classmethod
+	def create(cls,data,mac):
+		import datetime, logging
+		try:
+			device = Device.objects.get(mac=mac)
+			u = Usage(device=device, datetime=datetime.datetime.strptime(data['datetime'],"%m/%d/%y %H:%M:%S"),
+				load=data['load'],uptime=data['uptime'])
+			u.save()
+			return True
+		except Exception, e:
+			logging.exception("error")

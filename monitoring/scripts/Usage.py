@@ -64,20 +64,25 @@ class UsageManager():
 
     #sync to server
     def sync(self):
-        import urllib, constants, logging, os
+        import urllib, constants, logging, os, re, uuid
         try:
-            url = "http://"+constants.SERVER
+            url = "http://"+constants.SERVER+"/cgi/sync/"
             
-            data = urllib.urlopen(url, self.toJson())
-            response = json.dumps(data.read())
+            data_tosend = {"mac":':'.join(re.findall('..', '%012x' % uuid.getnode())),
+                           "data": self.getData()}
+
+            print "data_tosend",data_tosend
+            data = urllib.urlopen(url,data=json.dumps(data_tosend))
+            response = json.loads(data.read())
+            print response
             if response['status'] == 'ok':
                 print "sync complete deleting data"
-                os.remove(open('monitor_data.p','wb'))
+                os.remove('monitor_data.p')
 
         except IOError:
             print "internet connection needed"
         except Exception,e:
             logging.exception("error")
 
-    def toJson(self):
-        return json.dumps([d.toJson() for d in self.data])
+    def getData(self):
+        return [d.toJson() for d in self.data]
