@@ -9,9 +9,12 @@ from rest_framework.response import Response
 
 # API Exit Points
 class DeviceViewSet(viewsets.ModelViewSet):
-	queryset = Device.objects.all()
 	serializer_class = DeviceSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+	permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly)
+
+	def get_queryset(self):
+		queryset = Device.objects.all() if self.request.user.is_staff else Device.objects.filter(user=self.request.user)
+		return queryset
 
 class UsageViewSet(viewsets.ModelViewSet):
 	queryset = Usage.objects.all()

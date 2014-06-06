@@ -6,9 +6,9 @@ class DeviceSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Device
-		fields = ('user', 'mac', 'device', 'model', 'os', 'dump')
+		fields = ('id', 'user', 'mac', 'device', 'model', 'os', 'dump')
 
 class UsageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Usage
-		fields = ('device', 'datetime_received', 'datetime_sent', 'load', 'uptime')
+		fields = ('id', 'device', 'datetime_received', 'datetime_sent', 'load', 'uptime')

@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 api_router = DefaultRouter()
-api_router.register(r'devices', api_views.DeviceViewSet)
+api_router.register(r'devices', api_views.DeviceViewSet, base_name='device')
 api_router.register(r'usages', api_views.UsageViewSet)
 
 urlpatterns = patterns('',
