@@ -11,16 +11,11 @@ def firstuse(request):
 	data = request.POST
 	print data
 	try:
-		if not 'os' and 'mac' and 'token' in data:
-			print "error"
-			raise
+		vars = ['os', 'mac', 'token']
+		for var in vars: 
+			if var not in data: return HttpResponse(json.dumps({"status":"error"}))
 
-		dt = DeviceToken.objects.filter(token=data['token'])
-		if not dt or len(dt) == 0:
-			return HttpResponse(json.dumps({"status":"invalid_token"}))
-
-		Device.dt_to_device(dt.get(),data['mac'],data['os'])
-		return HttpResponse(json.dumps({"status":"ok"}))
+		return HttpResponse(json.dumps({"status":"ok"})) if Device.createWithToken(data['token'], data['mac'], data['os']) else HttpResponse(json.dumps({"status": "fail"}))
 
 	except Exception, e:
 		logging.exception("error")

@@ -3,7 +3,7 @@ from agila import settings
 
 # Devices registered to user
 class Device(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 	mac = models.CharField(max_length=20)						
 	device = models.CharField(max_length=100, null=True)
 	model = models.CharField(max_length=100, null=True)		
@@ -16,29 +16,43 @@ class Device(models.Model):
 	def __unicode__(self):
 		return self.mac
 
-	#@transaction.atomic
 	@classmethod
-	def dt_to_device(cls,dt,mac,os):
-		"""DeviceToken to device"""
-		d = cls(user=dt.user,mac=mac,os=os)
-		d.save()
+	def activate(cls, token, user):
+		with transaction.atomic():
+			if DeviceToken.objects.filter(token=token).count() > 0:
+				try:
+					dt = DeviceToken.objects.get(token=token)
+					mac = dt.mac
+					dt.delete()
+				except Exception, e:
+					print e
+					return False
 
-		dt.delete()
-		print "device to dt"
+				try:
+					device = cls.objects.get(mac=mac)
+					device.user = user
+					device.save()
+				except Exception, e:
+					print e
+					return False
+
+				return True
+			else:
+				return False
+
+	@classmethod
+	def createWithToken(cls, token, mac, os, dump=None):
+		with transaction.atomic():
+			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, dump=dump)
+			newdevice.save()
+
+			newtoken = DeviceToken(token=token, mac=mac)
+			newtoken.save()
+
 
 class DeviceToken(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	token = models.CharField(max_length=6,unique=True)
-
-	@classmethod
-	def generate(cls,user):
-		def randToken(len):
-			import random
-			return ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(len))
-
-		new_token = cls(user=user,token=randToken(6))
-		new_token.save()
-		return new_token.token
+	mac = models.CharField(max_length=20)
 
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):

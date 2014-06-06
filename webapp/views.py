@@ -20,7 +20,13 @@ def dashboard(request):
 		device.status = "Tracking" if (usageinbuffer.count() > 0) else "Offline"
 		device.statusclass = "label-success" if (usageinbuffer.count() > 0) else "label-danger"
 
-	return render(request, "dashboard.html", {
+	return render(request, "dashboard-main.html", {
 		"devices": devices,
 		"groups": groups
 		})
+
+@login_required(login_url='/')
+def link(request):
+	code = request.POST.get("code")
+	Device.activate(code, request.user)
+	return

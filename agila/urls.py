@@ -19,10 +19,13 @@ api_router.register(r'groupanalytics', api_views.GroupAnalyticsViewSet, base_nam
 urlpatterns = patterns('',
     url(r'^cgi/init/', views.firstuse),
     url(r'^cgi/sync/', views.status_update),
+	url(r'^link/', 'webapp.views.link'),	
+
 	url(r'^api/', include(api_router.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^facebook/', include('django_facebook.urls')),
 	url(r'^accounts/', include('django_facebook.auth_urls')),
+
 	url(r'^$', 'webapp.views.homepage', name='homepage'),
 	url(r'^dashboard/', 'webapp.views.dashboard', name='dashboard')
 )
