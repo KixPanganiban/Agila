@@ -16,7 +16,7 @@ def firstuse(request):
 			raise
 
 		dt = DeviceToken.objects.filter(token=data['token'])
-		if not dt:
+		if not dt or len(dt) == 0:
 			return HttpResponse(json.dumps({"status":"invalid_token"}))
 
 		Device.dt_to_device(dt.get(),data['mac'],data['os'])
