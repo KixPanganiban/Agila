@@ -13,4 +13,5 @@ urlpatterns = patterns('',
 	url(r'^accounts/', include('django_facebook.auth_urls')),
 
 	url(r'^$', 'webapp.views.homepage', name='homepage'),
+	url(r'^logout/', 'webapp.views.logout', name='logout'),
 )
