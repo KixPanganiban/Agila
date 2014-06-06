@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_facebook',
+    'rest_framework',
     'webapp'
 )
 
@@ -65,6 +66,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django_facebook.context_processors.facebook',
 )
+
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10,
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'rest_framework.renderers.JSONRenderer',
+    # )
+}
 
 ROOT_URLCONF = 'agila.urls'
 
