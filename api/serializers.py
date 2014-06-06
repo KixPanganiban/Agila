@@ -8,7 +8,7 @@ class DeviceSerializer(serializers.ModelSerializer):
 
 	def getStatus(self, obj):
 		buffertime = datetime.now() - timedelta(hours=1)
-		usageinbuffer = obj.usage_set.filter(datetime_received__gt=buffertime)
+		usageinbuffer = obj.usage_set.filter(datetime__gt=buffertime)
 		return "Tracking" if (usageinbuffer.count() > 0) else "Offline"
 
 	class Meta:
@@ -18,12 +18,12 @@ class DeviceSerializer(serializers.ModelSerializer):
 class UsageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Usage
-		fields = ('id', 'device', 'datetime_received', 'datetime_sent', 'load', 'uptime')
+		fields = ('id', 'device', 'datetime', 'load', 'uptime')
 
 class AnonymizedUsageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Usage
-		fields = ('datetime_received', 'datetime_sent', 'load', 'uptime')		
+		fields = ('datetime', 'load', 'uptime')		
 
 class AnalyticsSerializer(serializers.ModelSerializer):
 	user = serializers.Field(source='user.username')

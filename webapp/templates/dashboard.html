@@ -42,22 +42,19 @@ Agila &rarr; Dashboard
 					<th>Unlink</th>
 				</thead>
 				<tbody>
+					{% if devices.length < 1 %}
+					<tr><td colspan="6">You have not yet linked any devices. Link one now!</td></tr>
+					{% endif %}
+					{% for device in devices %}
 					<tr>
-						<td><span class="label label-success">Tracking</span></td>
-						<td>Mobile</td>
-						<td>Apple iPhone 4S</td>
-						<th>iOS</th>
-						<th>AA:BB:CC:DD:EE:FF</th>
-						<th><a href="#" class="text-danger">Unlink</a></th>
+						<td class="{{device.statustclass}}">{{device.status}}</td>
+						<td>{{device.device}}</td>
+						<td>{{device.model}}</td>
+						<td>{{device.os}}</td>
+						<td>{{device.mac}}</td>
+						<td>Unlink</td>
 					</tr>
-					<tr>
-						<td><span class="label label-danger">Offline</span></td>
-						<td>Mobile</td>
-						<td>cd-r king Arizona</td>
-						<th>Android</th>
-						<th>FF:EE:DD:CC:BB:AA</th>
-						<th><a href="#" class="text-danger">Unlink</a></th>
-					</tr>
+					{% endfor %}
 				</tbody>
 			</table>
 			<div class="pull-right">
@@ -73,10 +70,19 @@ Agila &rarr; Dashboard
 					<th>Global Rank</th>
 				</thead>
 				<tbody>
-					<th>UP Diliman</th>
-					<th>1,024</th>
-					<th>55.33 mWh</th>
-					<th>1st</th>
+					{% if groups.count < 1 %}
+					<tr>
+						<td colspan="4">You have not yet joined any communities. Join one now!</td>
+					</tr>
+					{% endif %}
+					{% for group in groups %}
+					<tr>
+						<td>{{group.name}}</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1st</td>
+					</tr>
+					{% endfor %}
 				</tbody>
 			</table>
 			<div class="pull-right">
