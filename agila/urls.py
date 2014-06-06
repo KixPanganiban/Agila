@@ -1,12 +1,15 @@
 from django.conf.urls import patterns, include, url
-
+from api import  views as api_views
+from rest_framework.routers import DefaultRouter
 from django.contrib import admin
 admin.autodiscover()
 
+api_router = DefaultRouter()
+api_router.register(r'devices', api_views.DeviceViewSet)
+api_router.register(r'usages', api_views.UsageViewSet)
+
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'agila.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+	url(r'^api/', include(api_router.urls)),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^facebook/', include('django_facebook.urls')),

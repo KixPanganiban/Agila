@@ -1,0 +1,14 @@
+from rest_framework import serializers
+from webapp.models import *
+
+class DeviceSerializer(serializers.ModelSerializer):
+	user = serializers.Field(source='user.username')
+
+	class Meta:
+		model = Device
+		fields = ('user', 'mac', 'device', 'model', 'os', 'dump')
+
+class UsageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Usage
+		fields = ('device', 'datetime_received', 'datetime_sent', 'load', 'uptime')
