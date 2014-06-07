@@ -5,7 +5,7 @@
 # @author ibaguio
 
 import subprocess
-from Usage import Usage, UsageManager
+from models import Usage, UsageManager
 
 #http://stackoverflow.com/questions/4760215/running-shell-command-from-python-and-capturing-the-output
 def getUptime():
