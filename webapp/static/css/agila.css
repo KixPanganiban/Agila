@@ -1,0 +1,9 @@
+body, html {
+	background-image: url('/static/img/crossword.png')!important;
+	background-repeat: repeat;
+	background-attachment: fixed;
+}
+
+#main-box {
+	background: rgba(255,255,255,255.75);
+}

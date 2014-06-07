@@ -4,38 +4,36 @@
 Agila &rarr; Dashboard
 {% endblock %}
 {% block body %}
-<div class="container">
-	<h1>Dashboard</h1>
-	<ul class="breadcrumb">
-		<li><a href="#">Home</a></li>
-		<li class="active">Dashboard</li>
-	</ul>
-	<hr/>
-	<div class="row">
-		<div class="col-lg-3">
-			<h3>At a glance</h3>
-			<div class="well">
-				<strong>Your total consumption:</strong>
-				<ul>
-					<li><em>0 today</em></li>
-					<li><em>0 all-time</em></li>
-					<li><em>You rank 1st in global consumers.</em></li>
-				</ul>
-				<strong>...this translates to:</strong>
-				<p>Your carbon emission is enough to melt a glacier the size of your house.</p>
-				<p class="pull-right"><a href="#">View my usage analytics &rarr;</a></p>
-				<hr/>
-			</div>
-		</div>
-		<div class="col-lg-9">
-			<h3>Welcome, {{user}}.</h3>
+<h1>Agila Dashboard</h1>
+<ul class="breadcrumb">
+	{% block breadcrumbs %}
+	{% endblock %}
+</ul>
+<hr/>
+<div class="row">
+	<div class="col-lg-3">
+		<h3>At a glance</h3>
+		<div class="well">
+			<strong>Your total consumption:</strong>
+			<ul>
+				<li><em><b>100 kWh</b> today</em></li>
+				<li><em><b>1.02</b> all-time</em></li>
+				<li><em>You rank 1st in global consumers.</em></li>
+			</ul>
+			<strong>...this translates to:</strong>
+			<p>Your carbon emission is enough to melt a glacier the size of your house.</p>
+			<p class="pull-right"><a href="/dashboard/analytics/">View my usage analytics &rarr;</a></p>
 			<hr/>
-			{% if flash %}
-			<div class="alert alert-{{flash.type}}">{{flash.message}}</div>
-			{% endif %}
-			{% block dashboard_content %}
-			{% endblock %}
 		</div>
+	</div>
+	<div class="col-lg-9">
+		<h3>Welcome, <b>{{user}}</b>.</h3>
+		<hr/>
+		{% if flash %}
+		<div class="alert alert-{{flash.type}}">{{flash.message}}</div>
+		{% endif %}
+		{% block dashboard_content %}
+		{% endblock %}
 	</div>
 </div>
 {% endblock %}

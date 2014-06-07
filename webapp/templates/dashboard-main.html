@@ -1,5 +1,9 @@
 {% extends "dashboard.html" %}
 {% load static %}
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li class="active">Dashboard</li>
+{% endblock %}
 {% block dashboard_content %}
 <h4>Your Devices</h4>
 <table class="table table-striped table-hover">
@@ -22,13 +26,13 @@
 			<td>{{device.model}}</td>
 			<td>{{device.os}}</td>
 			<td>{{device.mac}}</td>
-			<td><a href="#" class="text-danger">Unlink</a></td>
+			<td><a href="/unlink/?id={{device.id}}" class="text-danger tooltipped" data-toggle="tooltip" data-placement="left" title="" data-original-title="Unlink this device. You can easily link again, but all your analytics and usage data will be lost.">Unlink</a></td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
 <div class="pull-right">
-	<a href="javascript: $('#link-modal').modal();" class="btn btn-success">Link {% if devices.count > 0 %}Another{% endif %} One</a>
+	<a href="javascript: $('#link-modal').modal();" class="btn btn-success">Link {% if devices.count > 0 %}Another{% endif %} Device</a>
 </div>
 <h4>Your Communities</h4>
 <table class="table table-striped table-hover">
@@ -37,25 +41,27 @@
 		<th>Members</th>
 		<th>Total Consumption</th>
 		<th>Global Rank</th>
+		<th>Leave</th>
 	</thead>
 	<tbody>
 		{% if groups.count < 1 %}
 		<tr>
-			<td colspan="4"><center>You have not yet joined any communities. Join one now!</center></td>
+			<td colspan="5"><center>You have not yet joined any communities. Join one now!</center></td>
 		</tr>
 		{% endif %}
 		{% for group in groups %}
 		<tr>
 			<td>{{group.group.name}}</td>
-			<td>0</td>
+			<td>{{group.members}}</td>
 			<td>0</td>
 			<td>1st</td>
+			<td><a href="/leave_community/?id={{group.id}}" class="text-danger tooltipped" data-toggle="tooltip" data-placement="left" title="" data-original-title="Leave this community. This cannot be undone, but you can easily join again.">Leave</a></td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
 <div class="pull-right">
-	<a href="javascript: $('#community-modal').modal();" class="btn btn-success">Join {% if groups.count > 0 %}Another{% endif %} One</a>
+	<a href="javascript: $('#community-modal').modal();" class="btn btn-success">Join {% if groups.count > 0 %}Another{% endif %} Community</a>
 </div>
 <div class="modal" id="link-modal">
 	<div class="modal-dialog">
@@ -131,5 +137,6 @@
 				source: substringMatcher(communities)
 			});
 		});
+		$(".tooltipped").tooltip();
 	</script>
 	{% endblock %}
