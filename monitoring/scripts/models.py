@@ -93,7 +93,6 @@ class TokenManager():
     def loadToken(self):
         try:
             self.token = pickle.load(open('token.p','r'))
-            print "loaded token"
         except Exception, e:
             logging.exception("error")
             raise e

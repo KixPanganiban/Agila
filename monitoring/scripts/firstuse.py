@@ -7,17 +7,8 @@ import re, uuid
 from models import TokenManager
 def run():
 	import multiprocessing, platform
-	
+	print "Trying to connect with the server..."
 	token = TokenManager.get_or_generate()
-
-	print "======================================"
-	print "        Unique token generated"
-	print "          Your token is: %s"%(token)
-	print "  use this to uniquely identify this"
-	print "  machine over the cloud dashboard"
-	print "======================================"
-	print " to display the token again, you may"
-	print " run this script anytime"
 
 	data = {'cores': multiprocessing.cpu_count(),
 			'os': platform.uname()[0],
@@ -32,6 +23,15 @@ def run():
 
 		if reponse['status'] == 'fail':
 			print "Server responded with an error!"
+		else:
+			print "======================================"
+			print "        Unique token generated"
+			print "          Your token is: %s"%(token)
+			print "  use this to uniquely identify this"
+			print "  machine over the cloud dashboard"
+			print "======================================"
+			print " to display the token again, you may"
+			print " run this script anytime"
 	except IOError:
 		print "Internet connection needed"
 	except Exception, e:

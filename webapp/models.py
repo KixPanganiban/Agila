@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from agila import settings
-from django_facebook import FacebookCustomUser as User_
+from django_facebook.models import FacebookCustomUser as User_
 
 # Devices registered to user
 class Device(models.Model):
@@ -10,7 +10,7 @@ class Device(models.Model):
 	model = models.CharField(max_length=100, null=True,blank=True)		
 	os = models.CharField(max_length=100, null=True,blank=True)		
 	cores = models.IntegerField(null=False,blank=True)
-	consumption = models.IntegerField()
+	consumption = models.IntegerField(null=True)
 
 	class Meta:
 		unique_together = ['user', 'mac']
