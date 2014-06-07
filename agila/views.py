@@ -11,11 +11,11 @@ def firstuse(request):
 	data = request.POST
 	print data
 	try:
-		vars = ['os', 'mac', 'token']
+		vars = ['os', 'mac', 'token', 'cores']
 		for var in vars: 
 			if var not in data: return HttpResponse(json.dumps({"status":"error"}))
 
-		return HttpResponse(json.dumps({"status":"ok"})) if Device.createWithToken(data['token'], data['mac'], data['os']) else HttpResponse(json.dumps({"status": "fail"}))
+		return HttpResponse(json.dumps({"status":"ok"})) if Device.createWithToken(data['token'], data['mac'], data['os'], data['cores']) else HttpResponse(json.dumps({"status": "fail"}))
 
 	except Exception, e:
 		logging.exception("error")

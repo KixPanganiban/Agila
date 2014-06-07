@@ -1,14 +1,16 @@
 from django.db import models, transaction
 from agila import settings
+from django_facebook.models import FacebookCustomUser as User_
 
 # Devices registered to user
 class Device(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+	user = models.ForeignKey(User_, null=True)
 	mac = models.CharField(max_length=20)						
-	device = models.CharField(max_length=100, null=True, blank=True)
-	model = models.CharField(max_length=100, null=True, blank=True)		
-	os = models.CharField(max_length=100, null=True, blank=True)		
-	dump = models.TextField(null=True, blank=True)
+	device = models.CharField(max_length=100, null=True,blank=True)
+	model = models.CharField(max_length=100, null=True,blank=True)		
+	os = models.CharField(max_length=100, null=True,blank=True)		
+	cores = models.IntegerField(null=False,blank=True)
+	consumption = models.IntegerField(null=True)
 
 	class Meta:
 		unique_together = ['user', 'mac']
@@ -41,9 +43,9 @@ class Device(models.Model):
 				return False
 
 	@classmethod
-	def createWithToken(cls, token, mac, os, dump=None):
+	def createWithToken(cls, token, mac, os,cores, dump=None):
 		with transaction.atomic():
-			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, dump=dump)
+			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, cores=cores)
 			newdevice.save()
 
 			newtoken = DeviceToken(token=token, mac=mac)
