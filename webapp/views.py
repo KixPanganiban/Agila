@@ -5,6 +5,18 @@ from django.contrib.auth.decorators import login_required
 from models import *
 import django_facebook
 
+def getFlash(request):
+	if 'flash' in request.session and request.session['flash']:
+		flash = request.session.get('flash')
+		request.session['flash'] = None
+		return flash
+	else:
+		return None
+
+def storeFlash(request, message, type):
+	request.session['flash'] = { "message": message, "type": type }
+	return True
+
 def homepage(request):
 	return render(request, "homepage.html")
 
@@ -22,11 +34,15 @@ def dashboard(request):
 
 	return render(request, "dashboard-main.html", {
 		"devices": devices,
-		"groups": groups
+		"groups": groups,
+		"flash": getFlash(request)
 		})
 
 @login_required(login_url='/')
 def link(request):
 	code = request.POST.get("code")
-	Device.activate(code, request.user)
-	return
+	if Device.activate(code, request.user):
+		storeFlash(request, "Your device has been successfully linked!", "success")
+	else:
+		storeFlash(request, "Unable to link device. Please check if you have the right token!", "danger")
+	return redirect("/dashboard/")

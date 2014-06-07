@@ -3,12 +3,12 @@ from agila import settings
 
 # Devices registered to user
 class Device(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
 	mac = models.CharField(max_length=20)						
-	device = models.CharField(max_length=100, null=True)
-	model = models.CharField(max_length=100, null=True)		
-	os = models.CharField(max_length=100, null=True)		
-	dump = models.TextField(null=True)
+	device = models.CharField(max_length=100, null=True, blank=True)
+	model = models.CharField(max_length=100, null=True, blank=True)		
+	os = models.CharField(max_length=100, null=True, blank=True)		
+	dump = models.TextField(null=True, blank=True)
 
 	class Meta:
 		unique_together = ['user', 'mac']
@@ -52,7 +52,7 @@ class Device(models.Model):
 
 class DeviceToken(models.Model):
 	token = models.CharField(max_length=6,unique=True)
-	mac = models.CharField(max_length=20)
+	mac = models.CharField(max_length=20, null=True)
 
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):
@@ -77,6 +77,7 @@ class Analytics(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
+	date = models.DateField(auto_now_add=100)
 
 	class Meta:
 		unique_together = ['user', 'key']
