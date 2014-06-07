@@ -86,3 +86,35 @@ class UsageManager():
 
     def getData(self):
         return [d.toJson() for d in self.data]
+
+class TokenManager():
+    token = ""
+
+    def loadToken(self):
+        try:
+            self.token = pickle.load(open('token.p','r'))
+            print "loaded token"
+        except Exception, e:
+            logging.exception("error")
+            raise e
+
+    def save(self):
+        pickle.dump(self.token, open('token.p','wb'))
+
+    @classmethod
+    def get_or_generate(cls):
+        def randToken(len):
+            import random
+            return ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(len))
+        t = TokenManager()
+
+        try:
+            t.loadToken()
+
+        except Exception, e:
+            print "No token yet. Will create"
+            t.token = randToken(5)
+            t.save()
+            print e
+
+        return t.token
