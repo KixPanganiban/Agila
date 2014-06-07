@@ -8,7 +8,8 @@ class Device(models.Model):
 	device = models.CharField(max_length=100, null=True)
 	model = models.CharField(max_length=100, null=True)		
 	os = models.CharField(max_length=100, null=True)		
-	dump = models.TextField(null=True)
+	cores = models.IntegerField(null=False)
+	consumption = models.IntegerField()
 
 	class Meta:
 		unique_together = ['user', 'mac']
@@ -41,9 +42,9 @@ class Device(models.Model):
 				return False
 
 	@classmethod
-	def createWithToken(cls, token, mac, os, dump=None):
+	def createWithToken(cls, token, mac, os,cores, dump=None):
 		with transaction.atomic():
-			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, dump=dump)
+			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, cores=cores)
 			newdevice.save()
 
 			newtoken = DeviceToken(token=token, mac=mac)
