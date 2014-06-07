@@ -102,6 +102,7 @@ class UserGroup(models.Model):
 # Variable-form table for user analytics
 class Analytics(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	device = models.ForeignKey(Device, null=True)
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
 	date = models.DateField(auto_now_add=100)
@@ -110,7 +111,35 @@ class Analytics(models.Model):
 		unique_together = ['user', 'key']
 
 	def __unicode__(self):
-		"%s (%s)"%(self.user.username, self.key)
+		return "%s %s: %s"%(self.user.username, self.key, self.value)
+
+	@classmethod
+	def updateConsumption(cls, user, device, date, cons):
+		try:
+			a = Analytics(user=user,device=device, key="consumption", value=str(cons), date=date)
+			a.save()
+		except Exception, e:
+			print e
+			raise e
+
+	@classmethod
+	def getPrice(self, date, user, device=None):
+		if self.key != "consumption": return
+		price = 12.66 / 1000
+
+		data = Analytics.objects.filter(user=user,date=date)
+		if device:
+			data = data.filter(device=device)
+
+		sum_ = 0
+		for d in data: sum_ += float(d)
+		return sum_
+
+	def getPrice(self):
+		if self.key != "consumption":
+			return
+		price = 12.66 / 1000
+		return float(self.value) * price
 
 # Variable-form table for group analytics
 class GroupAnalytics(models.Model):
