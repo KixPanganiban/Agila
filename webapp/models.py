@@ -136,11 +136,12 @@ class Usage(models.Model):
 
 	@classmethod
 	def create(cls,data,mac):
-		import datetime, logging
+		import datetime, logging, json
 		try:
 			device = Device.objects.get(mac=mac)
+			load = ','.join(data['load'])
 			u = Usage(device=device, datetime=datetime.datetime.strptime(data['datetime'],"%m/%d/%y %H:%M:%S"),
-				load=data['load'],uptime=data['uptime'])
+				load=load,uptime=data['uptime'])
 			u.save()
 			return True
 		except Exception, e:
