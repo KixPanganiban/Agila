@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^cgi/init/', views.firstuse),
     url(r'^cgi/sync/', views.status_update),
 	url(r'^link/', 'webapp.views.link'),	
+	url(r'^join_community/', 'webapp.views.join_community'),	
 
 	url(r'^api/', include(api_router.urls)),
     url(r'^admin/', include(admin.site.urls)),

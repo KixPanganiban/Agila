@@ -4,6 +4,7 @@
 	<head>
 		<link href="/static/django_facebook/css/facebook.css" type="text/css" rel="stylesheet" media="all" />
 		<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="/static/css/typeahead.css"/>
 		<link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"/>
 		{% block css %}
 		{% endblock %}
@@ -17,11 +18,11 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">Agila</a>
+				<a class="navbar-brand" href="/">Agila</a>
 			</div>
 			<div class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
-					<li><a href="#">Welcome</a></li>
+					<li><a href="/">Welcome</a></li>
 					{% if user.is_authenticated %}<li><a href="/dashboard/">Dashboard</a></li>{% endif %}
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -35,7 +36,7 @@
 			{% block body %}
 			{% endblock %}
 		</div>
-		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH</div>
+		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH<br/><i>by su</div>
 		{% if not user.is_authenticated %}
 		<div class="modal" id="login-modal">
 			<div class="modal-dialog">
@@ -49,7 +50,7 @@
 						{% include 'django_facebook/_facebook_js.html' %}
 						<form action="{% url 'facebook_connect' %}?facebook_login=1" method="post">
 							<p>Agila only uses your Facebook data to make authentication easier and let you customize your profile.</p>
-							<input type="hidden" value="/" name="next" />
+							<input type="hidden" value="/dashboard/" name="next" />
 							{% csrf_token %}
 							<input data-dismiss="modal" onclick="F.connect(this.parentNode); return false;" type="image" src="/static/django_facebook/images/facebook_login.png" />
 						</form>
@@ -60,8 +61,9 @@
 		</div>
 		{% endif %}
 	</body>
-	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/static/js/typeahead.js"></script>
 	{% block js %}
 	{% endblock %}
 </html>
