@@ -1,9 +1,10 @@
 from django.db import models, transaction
 from agila import settings
+from django_facebook import FacebookCustomUser as User_
 
 # Devices registered to user
 class Device(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
+	user = models.ForeignKey(User_, null=True)
 	mac = models.CharField(max_length=20)						
 	device = models.CharField(max_length=100, null=True)
 	model = models.CharField(max_length=100, null=True)		
