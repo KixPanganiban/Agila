@@ -1,7 +1,6 @@
 {% extends "dashboard.html" %}
 {% load static %}
 {% block dashboard_content %}
-<div class="alert alert-danger"><strong>Hey there!</strong> We've noticed that your energy consumption is above your usual. Think of all the dying kittens! <a href="#">What can I do?</a></div>
 <h4>Your Devices</h4>
 <table class="table table-striped table-hover">
 	<thead>
@@ -13,17 +12,17 @@
 		<th>Unlink</th>
 	</thead>
 	<tbody>
-		{% if devices.length < 1 %}
+		{% if devices.count < 1 %}
 		<tr><td colspan="6"><center>You have not yet linked any devices. Link one now!</center></td></tr>
 		{% endif %}
 		{% for device in devices %}
 		<tr>
-			<td class="{{device.statustclass}}">{{device.status}}</td>
+			<td><span class="label {{device.statusclass}}">{{device.status}}</span></td>
 			<td>{{device.device}}</td>
 			<td>{{device.model}}</td>
 			<td>{{device.os}}</td>
 			<td>{{device.mac}}</td>
-			<td>Unlink</td>
+			<td><a href="#" class="text-danger">Unlink</a></td>
 		</tr>
 		{% endfor %}
 	</tbody>

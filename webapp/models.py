@@ -6,10 +6,10 @@ from django_facebook import FacebookCustomUser as User_
 class Device(models.Model):
 	user = models.ForeignKey(User_, null=True)
 	mac = models.CharField(max_length=20)						
-	device = models.CharField(max_length=100, null=True)
-	model = models.CharField(max_length=100, null=True)		
-	os = models.CharField(max_length=100, null=True)		
-	cores = models.IntegerField(null=False)
+	device = models.CharField(max_length=100, null=True,blank=True)
+	model = models.CharField(max_length=100, null=True,blank=True)		
+	os = models.CharField(max_length=100, null=True,blank=True)		
+	cores = models.IntegerField(null=False,blank=True)
 	consumption = models.IntegerField()
 
 	class Meta:
@@ -54,7 +54,7 @@ class Device(models.Model):
 
 class DeviceToken(models.Model):
 	token = models.CharField(max_length=6,unique=True)
-	mac = models.CharField(max_length=20)
+	mac = models.CharField(max_length=20, null=True)
 
 	def __unicode__(self):
 		try:
@@ -85,6 +85,7 @@ class Analytics(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
+	date = models.DateField(auto_now_add=100)
 
 	class Meta:
 		unique_together = ['user', 'key']
