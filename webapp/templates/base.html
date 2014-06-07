@@ -37,7 +37,7 @@
 			{% block body %}
 			{% endblock %}
 		</div>
-		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH<br/><i>by su</i></div>
+		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH<br/><i>by <b>su</b>peruser for #HackTheClimate</i></div>
 		{% if not user.is_authenticated %}
 		<div class="modal" id="login-modal">
 			<div class="modal-dialog">
@@ -65,6 +65,7 @@
 	<script type="text/javascript" src="/static/js/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/typeahead.js"></script>
+	<script type="text/javascript" src="/static/js/highcharts.js"></script>
 	{% block js %}
 	{% endblock %}
 </html>
