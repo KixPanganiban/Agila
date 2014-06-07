@@ -4,43 +4,38 @@
 # @author ibaguio
 import constants, urllib, json, logging
 import re, uuid
-
+from models import TokenManager
 def run():
 	import multiprocessing, platform
+	
+	token = TokenManager.get_or_generate()
 
-	while True:
-		token = raw_input("Please enter unique token: ")
+	print "======================================"
+	print "        Unique token generated"
+	print "          Your token is: %s"%(token)
+	print "  use this to uniquely identify this"
+	print "  machine over the cloud dashboard"
+	print "======================================"
+	print " to display the token again, you may"
+	print " run this script anytime"
 
-		data = {'cores': multiprocessing.cpu_count(),
-				'os': platform.uname()[0],
-				'mac': ':'.join(re.findall('..', '%012x' % uuid.getnode())),
-				'token': token}
+	data = {'cores': multiprocessing.cpu_count(),
+			'os': platform.uname()[0],
+			'mac': ':'.join(re.findall('..', '%012x' % uuid.getnode())),
+			'token': token}
 
-		try:
-			url = "http://"+ constants.SERVER +"/cgi/init/"
-			encoded = urllib.urlencode(data)
-			data = urllib.urlopen(url,encoded)
-			reponse = json.loads(data.read())
-			if reponse['status'] != 'invalid_token':
-				print "Successfully initiated device"
-				break
-			elif reponse['status'] != 'invalid':
-				print "Error occured"
-				break
-			else:
-				print "Invalid token."
-		except IOError:
-			print "Internet connection needed"
-			break
-		except Exception, e:
-			logging.exception('error')
-			break
+	try:
+		url = "http://"+ constants.SERVER +"/cgi/init/"
+		encoded = urllib.urlencode(data)
+		data = urllib.urlopen(url,encoded)
+		reponse = json.loads(data.read())
 
-	#device mac address
-	#os details
-	#device cores
-	#hardware
-	#models
+		if reponse['status'] == 'fail':
+			print "Server responded with an error!"
+	except IOError:
+		print "Internet connection needed"
+	except Exception, e:
+		logging.exception('error')
 
 if __name__ == '__main__':
 	run()

@@ -1,8 +1,9 @@
 *.pyc
 agila/*.pyc
 webapp/*.pyc
-db.sqlite3
+*.sqlite3
 media/images
 webclient/build
 node_modules
 *.sw[a-z]
+*.p

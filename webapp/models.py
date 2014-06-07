@@ -14,7 +14,7 @@ class Device(models.Model):
 		unique_together = ['user', 'mac']
 
 	def __unicode__(self):
-		return self.mac
+		return "%s %s"%(self.user.username, self.mac)
 
 	@classmethod
 	def activate(cls, token, user):
@@ -54,6 +54,12 @@ class DeviceToken(models.Model):
 	token = models.CharField(max_length=6,unique=True)
 	mac = models.CharField(max_length=20, null=True)
 
+	def __unicode__(self):
+		try:
+			user = Device.objects.get(mac=self.mac).user.username
+			return "%s %s"%(self.user, self.mac)
+		except:
+			return self.mac
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):
 	name = models.CharField(max_length=100, unique=True)
