@@ -9,14 +9,18 @@ class Device(models.Model):
 	device = models.CharField(max_length=100, null=True,blank=True)
 	model = models.CharField(max_length=100, null=True,blank=True)		
 	os = models.CharField(max_length=100, null=True,blank=True)		
-	cores = models.IntegerField(null=False,blank=True)
+	cores = models.IntegerField(null=False,blank=True, default=1)
 	consumption = models.IntegerField(null=True)
+	linked = models.BooleanField(default=True)
 
 	class Meta:
 		unique_together = ['user', 'mac']
 
 	def __unicode__(self):
-		return "%s %s"%(self.user.username, self.mac)
+		if self.user:
+			return "%s %s"%(self.user.username, self.mac)
+		else:
+			return "UNLINKED %s"%(self.mac)
 
 	@classmethod
 	def activate(cls, token, user):
@@ -31,7 +35,7 @@ class Device(models.Model):
 					return False
 
 				try:
-					device = cls.objects.get(mac=mac)
+					device = cls.objects.exclude(linked=False).get(mac=mac)
 					device.user = user
 					device.save()
 				except Exception, e:
@@ -45,7 +49,7 @@ class Device(models.Model):
 	@classmethod
 	def createWithToken(cls, token, mac, os,cores, dump=None):
 		with transaction.atomic():
-			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, cores=cores)
+			newdevice = cls(user=None, mac=mac, device=None, model=None, os=os, cores=cores, linked=True)
 			newdevice.save()
 
 			newtoken = DeviceToken(token=token, mac=mac)
@@ -65,6 +69,7 @@ class DeviceToken(models.Model):
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):
 	name = models.CharField(max_length=100, unique=True)
+	members = models.IntegerField(null=True)		# Auto-updated every time a new UserGroup is made
 
 	def __unicode__(self):
 		return self.name
@@ -76,6 +81,20 @@ class UserGroup(models.Model):
 
 	class Meta:
 		unique_together = ['user', 'group']
+
+	# Add 1 to CustomGroup members every time 1 joins
+	def save(self, *args, **kwargs):
+		if not self.group.members: self.group.members = 0
+		self.group.members += 1
+		self.group.save()
+		super(UserGroup, self).save(*args, **kwargs)
+
+	# Remove 1 to CustomGroup members every time 1 leaves
+	def delete(self, *args, **kwargs):
+		if not self.group.members: self.group.members = 1
+		self.group.members -= 1
+		self.group.save()
+		super(UserGroup, self).save(*args, **kwargs)
 
 	def __unicode__(self):
 		return "[%s] %s"%(self.group.name, self.user.username)

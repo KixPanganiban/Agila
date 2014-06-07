@@ -20,7 +20,9 @@ urlpatterns = patterns('',
     url(r'^cgi/init/', views.firstuse),
     url(r'^cgi/sync/', views.status_update),
 	url(r'^link/', 'webapp.views.link'),	
+	url(r'^unlink/', 'webapp.views.unlink'),	
 	url(r'^join_community/', 'webapp.views.join_community'),	
+	url(r'^leave_community/', 'webapp.views.leave_community'),	
 
 	url(r'^api/', include(api_router.urls)),
     url(r'^admin/', include(admin.site.urls)),
@@ -28,5 +30,6 @@ urlpatterns = patterns('',
 	url(r'^accounts/', include('django_facebook.auth_urls')),
 
 	url(r'^$', 'webapp.views.homepage', name='homepage'),
-	url(r'^dashboard/', 'webapp.views.dashboard', name='dashboard')
+	url(r'^dashboard/$', 'webapp.views.dashboard', name='dashboard'),
+	url(r'^dashboard/analytics/', 'webapp.views.analytics', name='analytics')
 )

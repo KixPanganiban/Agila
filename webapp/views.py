@@ -23,7 +23,7 @@ def homepage(request):
 
 @login_required(login_url='/')
 def dashboard(request):
-	devices = request.user.device_set.all()
+	devices = request.user.device_set.filter(linked=True)
 	groups = request.user.usergroup_set.all()
 
 	# Put string data
@@ -32,7 +32,11 @@ def dashboard(request):
 		usageinbuffer = device.usage_set.filter(datetime__gt=buffertime)
 		device.status = "Tracking" if (usageinbuffer.count() > 0) else "Offline"
 		device.statusclass = "label-success" if (usageinbuffer.count() > 0) else "label-danger"
-		groups_json = json.dumps([group.name for group in CustomGroup.objects.all()])
+
+	for group_ in groups:
+		group_.members = group_.group.members if group_.group.members else 0
+	
+	groups_json = json.dumps([group.name for group in CustomGroup.objects.all()])
 
 	return render(request, "dashboard-main.html", {
 		"devices": devices,
@@ -42,6 +46,10 @@ def dashboard(request):
 		})
 
 @login_required(login_url='/')
+def analytics(request):
+	return render(request, "dashboard-analytics.html")
+
+@login_required(login_url='/')
 def link(request):
 	code = request.POST.get("code")
 	if Device.activate(code, request.user):
@@ -49,6 +57,24 @@ def link(request):
 	else:
 		storeFlash(request, "Unable to link device. Please check if you have the right token!", "danger")
 	return redirect("/dashboard/")
+
+@login_required(login_url='/')
+def unlink(request):
+	if 'id' not in request.GET:
+		return redirect('/dashboard/')
+	id = request.GET.get('id')
+	try:
+		device = Device.objects.get(id=id)
+		device.linked = False
+		device.user = None
+		device.save()
+	except Exception, e:
+		print e
+		storeFlash(request, "Something went wrong. We can't unlink your device. Please try again.", "danger")
+		return redirect('/dashboard/')
+
+	storeFlash(request, "Device unlinked! You can link again anytime.", "success")
+	return redirect('/dashboard/')
 
 @login_required(login_url='/')
 def join_community(request):
@@ -61,6 +87,12 @@ def join_community(request):
 	groups = CustomGroup.objects.filter(name__iexact=community)
 	if (groups.count() > 0):
 		group = groups.get()
+		
+		user_groups = [group for group in request.user.usergroup_set.all()]
+		if group in user_groups:
+			storeFlash(request, "You're already a member of that group!", "warning")
+			return redirect('/dashboard/')
+
 		try:
 			new_usergroup = UserGroup(user=request.user, group=group)
 			new_usergroup.save()
@@ -78,4 +110,22 @@ def join_community(request):
 				storeFlash(request, "You are unable to join that group.", "danger")
 
 	storeFlash(request, "You successfully joined %s!"%(community), "success")
+	return redirect('/dashboard/')
+
+@login_required(login_url='/')
+def leave_community(request):
+	if 'id' not in request.GET:
+		return redirect('/dashboard/')
+
+	community_id = request.GET.get('id')
+	try:
+		community_link = UserGroup.objects.get(id=community_id)
+		community_name = community_link.group.name
+		community_link.delete()
+	except Exception, e:
+		print e
+		storeFlash(request, "Unable to remove you from that community.", "danger")
+		return redirect("/dashboard/")
+
+	storeFlash(request, "You have successfully left %s."%community_name, "success")
 	return redirect('/dashboard/')

@@ -9,6 +9,14 @@ Agila &rarr; Home
 	<p>Agila helps you track and visualize your carbon footprint and energy use. Forms groups, join communities, and help raise awareness about climate change: one device at a time.</p>
 </div>
 <div class="row">
+<center>
+	<h1 class="fa fa-windows fa-5x">&nbsp;</h1>&nbsp;
+	<h1 class="fa fa-linux fa-5x">&nbsp;</h1>&nbsp;
+	<h1 class="fa fa-apple fa-5x">&nbsp;</h1>&nbsp;
+	<h1 class="fa fa-android fa-5x">&nbsp;</h1>&nbsp;
+</center>
+</div>
+<div class="row">
 	<div class="col-lg-4">
 		<h3><span class="fa fa-cogs"></span> How It Works</h3>
 		<p>Sign up for a free Agila account using your Facebook, register your devices, download the small tracking app, and start tracking immediately. Agila currently supports all desktop platforms and Android. iOS support coming soon.</p>
@@ -20,12 +28,12 @@ Agila &rarr; Home
 	{% if not user.is_authenticated %}
 	<div class="col-lg-4">
 		<h3><span class="fa fa-sign-in"></span> Create An Account Now</h3>
-		<p>A Facebook account is all you need to start. No asking for emails, no complicated sign up process. Start saving the planet now. <a href="javascript: $('#login-modal').modal();" class="btn btn-block btn-primary">Sign up here &rarr;</a> </p>
+		<p>A Facebook account is all you need to start. No asking for emails, no complicated sign up process. Start saving the planet now.</p> <a href="javascript: $('#login-modal').modal();" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i> Sign up or login here &rarr;</a>
 	</div>
 	{% else %}
 	<div class="col-lg-4">
 		<h3><span class="fa fa-sign-in"></span> Sign In To Your Dashboard</h3>
-		<p>Start adding your devices and tracking your resource consumption. Help save the planet! <a href="/dashboard/" class="btn btn-block btn-primary">Go to Dashboard &rarr;</a> </p>
+		<p>Start adding your devices and tracking your resource consumption. Help save the planet! <a href="/dashboard/" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i>Go to Dashboard &rarr;</a> </p>
 	</div>
 	{% endif %}
 </div>
