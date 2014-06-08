@@ -19,12 +19,16 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="/">Agila</a>
+				<a class="navbar-brand" href="/">Agila &beta;</a>
 			</div>
 			<div class="navbar-collapse collapse navbar-inverse-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="/">Welcome</a></li>
-					{% if user.is_authenticated %}<li><a href="/dashboard/">Dashboard</a></li>{% endif %}
+					{% if user.is_authenticated %}<li><a href="/dashboard/">Dashboard</a></li>
+					<li><a href="/dashboard/analytics/">Usage Analytics</a></li>
+					<li><a href="/appdb/">AppDB</a></li>
+					{% endif %}
+					<li><a href="/api">Agila API</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if not user.is_authenticated %}<li><a href="javascript:$('#login-modal').modal();"><i class="fa fa-facebook"></i> Login</a></li>{% endif %}
@@ -37,7 +41,13 @@
 			{% block body %}
 			{% endblock %}
 		</div>
-		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH<br/><i>by <b>su</b>peruser for #HackTheClimate</i></div>
+		<div class="text-muted" style="text-align: center;">Created with <span class="fa fa-heart"></span> from PH<br/><i>by <b>su</b>peruser for #HackTheClimate</i>
+			<br/>
+			<a href="http://www.djangoproject.com/"><img src="https://www.djangoproject.com/m/img/badges/djangosite80x15.gif" border="0" alt="A Django site." title="A Django site." /></a><a href="http://mariadb.org">
+			<img src="http://badges.mariadb.org/mariadb-badge-80x15.png"
+			width="80" height="15" border="0" alt="Powered by MariaDB"
+			title="Powered by MariaDB" />
+		</a></div>
 		{% if not user.is_authenticated %}
 		<div class="modal" id="login-modal">
 			<div class="modal-dialog">

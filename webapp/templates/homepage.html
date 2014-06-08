@@ -5,7 +5,7 @@ Agila &rarr; Home
 {% endblock %}
 {% block body %}
 <div class="jumbotron">
-	<h1>Agila</h1>
+	<h1>Agila<small><small>&beta; 0.1</small></small></h1>
 	<p>Agila helps you track and visualize your carbon footprint and energy use. Forms groups, join communities, and help raise awareness about climate change: one device at a time.</p>
 </div>
 <div class="row">
@@ -23,7 +23,7 @@ Agila &rarr; Home
 	</div>
 	<div class="col-lg-4">
 		<h3><span class="fa fa-code-fork"></span> Free and Open Source</h3>
-		<p>Agila is completely free to use (and reuse). You can even download the source code right now from <a href="http://github.com/kixpanganiban/agila">Github</a>. The anonymized data collected by Agila can also be accessed through the <a href="#">Agila API</a>.</p>
+		<p>Agila is completely free to use (and reuse). You can even download the source code right now from <a href="http://github.com/kixpanganiban/agila">Github</a>. The anonymized data collected by Agila can also be accessed through the <a href="/api"><i class="fa fa-key"></i> Agila API</a>.</p>
 	</div>
 	{% if not user.is_authenticated %}
 	<div class="col-lg-4">
@@ -33,7 +33,7 @@ Agila &rarr; Home
 	{% else %}
 	<div class="col-lg-4">
 		<h3><span class="fa fa-sign-in"></span> Sign In To Your Dashboard</h3>
-		<p>Start adding your devices and tracking your resource consumption. Help save the planet! <a href="/dashboard/" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i>Go to Dashboard &rarr;</a> </p>
+		<p>Start adding your devices and tracking your resource consumption. Help save the planet! <a href="/dashboard/" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i> Go to Dashboard &rarr;</a> </p>
 	</div>
 	{% endif %}
 </div>

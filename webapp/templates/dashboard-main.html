@@ -11,6 +11,11 @@
 	<li class=""><a href="#dumb" data-toggle="tab">Non-smart Appliances</a></li>
 </ul>
 <div class="tab-content">
+	{% if consumption_not_set > 0 %}
+	<div class="alert alert-warning">
+	To start tracking your energy consumption, be sure to set the wattage of your smart devices. Click on "Set Wattage" on each of your devices below. 
+	</div>
+	{% endif %}
 	<div class="tab-pane fade active in" id="smart">
 		<table class="table table-striped table-hover">
 			<thead>
@@ -27,7 +32,7 @@
 				{% endif %}
 				{% for device in devices %}
 				<tr>
-					<td><span class="label {{device.statusclass}}">{{device.status}}</span></td>
+					<td><span class="label {{device.statusclass}}">{% if device.status == 'Set Wattage' %}<a href="#" onclick="wattage_modal({{device.id}});" style="color: white;">{% endif %}{{device.status}}{% if device.status == 'Set Wattage' %}</a>{% endif %}</span></td>
 					<td>{{device.device}}</td>
 					<td>{{device.model}}</td>
 					<td>{{device.os}}</td>
@@ -40,26 +45,83 @@
 	</div>
 	<div class="tab-pane fade" id="dumb">
 		<table class="table table-striped table-hover">
-		<thead>
-			<th>Status</th>
-			<th>Device Class</th>
-			<th>Device Name</th>
-			<th>Remove</th>
-		</thead>
-		<tbody>
-			<tr>
-				<td><span class="label label-success">POWERED ON</span></td>
-				<td>Refrigerator</td>
-				<td>Dad's GE Fridge</td>
-				<td><a class="text-danger" href="#">Remove</a></td>
-			</tr>
-		</tbody>
+			<thead>
+				<th>Status</th>
+				<th>Device Class</th>
+				<th>Device Name</th>
+				<th>Remove</th>
+			</thead>
+			<tbody>
+				{% if not dumbapps %}
+				<tr><td colspan="4"><center>You have no devices here yet! Add one now.</center></td></tr>
+				{% else %}
+				{% for app in dumbapps %}
+				<tr>
+					<td><span class="label label-success">POWERED ON</span></td>
+					<td>{{app.appdb.name}} ({{app.appdb.wattage}})</td>
+					<td>{{app.description}}</td>
+					<td><a class="text-danger" href="#">Remove</a></td>
+				</tr>
+				{% endfor %}
+				{% endif %}
+			</tbody>
 		</table>
 	</div>
 </div>
 <div class="pull-right">
 	<a href="javascript: $('#link-modal').modal();" class="btn btn-success">Link {% if devices.count > 0 %}Another{% endif %} Device</a>
-	<a href="javascript: $('#link-modal').modal();" class="btn btn-success">Add {% if devices.count > 0 %}Another{% endif %} Appliance</a>
+	<a href="javascript: $('#appliance-detail').fadeToggle();" class="btn btn-success">Add {% if devices.count > 0 %}Another{% endif %} Appliance</a>
+</div>
+<br/><br/>
+<hr/>
+<div id="appliance-detail" style="display: none;">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div>
+				Enter the details of your appliance:
+				<form action="/add_appliance/" method="POST">
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="description">Description:</label>
+						<input class="form-control" name="description" id="description" placeholder="Dad's fridge" required/>
+						<label for="class">Device Class: (device not listed? submit it <a href="/appdb/">here</a>)</label>
+						<select class="form-control" name="class" id="class">
+							{% for app in appdb %}
+							<option value="{{app.id}}">{{app.name}} ({{app.wattage}} watts)</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<b>Schedule (day this device is usually open):</b>
+						<br/>
+						<span>Days:</span>
+						<div class="row">
+							{% for day in days %}
+							<div class="col-md-1">
+								<input type="checkbox" name="day-{{day}}"/> {{day}}
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="form-group">
+						<span>Hours:</span>
+						<div class="row">
+							{% for hour in hours %}
+							<div class="col-md-1">
+								<input type="checkbox" name="hour-{{hour.value}}"/> {{hour.text}}
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="form-group">
+					<div class="pull-right">
+					<input type="submit" class="btn btn-success" value="Submit">
+					</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 <br/><br/><hr/>
 <h4>Your Communities</h4>
@@ -138,33 +200,62 @@
 			</div>
 		</div>
 	</div>
-	{% endblock %}
-	{% block js%}
-	<script type="text/javascript">
-		$(document).ready(function() {
-		var substringMatcher = function(strs) {
-		return function findMatches(q, cb) {
-		var matches, substringRegex;
-		matches = [];
-		substrRegex = new RegExp(q, 'i');
-		$.each(strs, function(i, str) {
-		if (substrRegex.test(str)) {
-		matches.push({ value: str });
-		}
+</div>
+<div class="modal" id="wattage-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">Set Wattage</h4>
+			</div>
+			<div class="modal-body">
+				<div style="text-align: center;">
+					<form action="/set_wattage/" method="POST">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="community">Set the wattage of your device:</label>
+								<input class="form-control" name="set-wattage" id="set-wattage" placeholder="Enter units in watts" required/>
+								<input type="hidden" value="" name="id" id="set-wattage-device-id"/>
+								<input type="submit" class="btn btn-success btn-block" value="Set"/>
+							<hr/>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js%}
+<script type="text/javascript">
+	var wattage_modal = function(id) {
+		$('#wattage-modal').modal(); 
+		$('#set-wattage-device-id').val(id);
+	}
+	$(document).ready(function() {
+	var substringMatcher = function(strs) {
+	return function findMatches(q, cb) {
+	var matches, substringRegex;
+	matches = [];
+	substrRegex = new RegExp(q, 'i');
+	$.each(strs, function(i, str) {
+	if (substrRegex.test(str)) {
+	matches.push({ value: str });
+	}
+	});
+	cb(matches);
+	};
+	};
+	{% autoescape off %}
+	var communities = {{groups_json}};
+	{% endautoescape %}
+		$("#community").typeahead({
+			minlength: 1
+		}, {
+			name: 'communities',
+			source: substringMatcher(communities)
 		});
-		cb(matches);
-		};
-		};
-		{% autoescape off %}
-		var communities = {{groups_json}};
-		{% endautoescape %}
-			$("#community").typeahead({
-				minlength: 1
-			}, {
-				name: 'communities',
-				source: substringMatcher(communities)
-			});
-		});
-		$(".tooltipped").tooltip();
-	</script>
-	{% endblock %}
+	});
+	$(".tooltipped").tooltip();
+</script>
+{% endblock %}

@@ -23,6 +23,8 @@ urlpatterns = patterns('',
 	url(r'^unlink/', 'webapp.views.unlink'),	
 	url(r'^join_community/', 'webapp.views.join_community'),	
 	url(r'^leave_community/', 'webapp.views.leave_community'),	
+	url(r'^add_appliance/', 'webapp.views.add_appliance'),	
+	url(r'^set_wattage/', 'webapp.views.set_wattage'),	
 
 	url(r'^api/', include(api_router.urls)),
     url(r'^admin/', include(admin.site.urls)),
@@ -31,5 +33,6 @@ urlpatterns = patterns('',
 
 	url(r'^$', 'webapp.views.homepage', name='homepage'),
 	url(r'^dashboard/$', 'webapp.views.dashboard', name='dashboard'),
-	url(r'^dashboard/analytics/', 'webapp.views.analytics', name='analytics')
+	url(r'^dashboard/analytics/', 'webapp.views.analytics', name='analytics'),
+	url(r'^appdb/', 'webapp.views.appdb', name='appdb')
 )

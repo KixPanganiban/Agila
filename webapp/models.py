@@ -66,6 +66,26 @@ class DeviceToken(models.Model):
 			return "%s %s"%(self.user, self.mac)
 		except:
 			return self.mac
+
+# Also called the AppDB, for devices with non-smart capabilities
+class AppDB(models.Model):
+	name = models.CharField(max_length=100)
+	wattage = models.IntegerField()		# If smart device, this translates to consumption
+	type = models.CharField(max_length=100, choices=[['DUMB', 'DUMB'], ['SMART', 'SMART']])
+
+	def __unicode(self):
+		return "%s wH %s"%(self.wattage, self.name)
+
+class DumbDevice(models.Model):
+	user = models.ForeignKey(User_, null=True)
+	description = models.TextField(null=True)
+	appdb = models.ForeignKey(AppDB, null=True)
+	schedule = models.CharField(max_length=32, default="".join(['0' for x in xrange(32)]))
+	linked = models.BooleanField(default=True)
+
+	def __unicode__(self):
+		return "%s wH %s"%(self.appdb.wattage, self.description)
+
 # Using CustomGroup because actual Group is already used by Django.auth
 class CustomGroup(models.Model):
 	name = models.CharField(max_length=100, unique=True)
@@ -103,6 +123,7 @@ class UserGroup(models.Model):
 class Analytics(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	device = models.ForeignKey(Device, null=True)
+	dumbdevice = models.ForeignKey(DumbDevice, null=True)
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
 	date = models.DateField(auto_now_add=100)

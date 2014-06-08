@@ -25,13 +25,48 @@ def homepage(request):
 def dashboard(request):
 	devices = request.user.device_set.filter(linked=True)
 	groups = request.user.usergroup_set.all()
+	appdb = AppDB.objects.filter(type='DUMB')
+	dumbapps = request.user.dumbdevice_set.filter(linked=True)
+	hours = [
+		{"value": 0, "text": "12am"},
+		{"value": 1, "text": "1am"},
+		{"value": 2, "text": "2am"},
+		{"value": 3, "text": "3am"},
+		{"value": 4, "text": "4am"},
+		{"value": 5, "text": "5am"},
+		{"value": 6, "text": "6am"},
+		{"value": 7, "text": "7am"},
+		{"value": 8, "text": "8am"},
+		{"value": 9, "text": "9am"},
+		{"value": 10, "text": "10am"},
+		{"value": 11, "text": "11am"},
+		{"value": 12, "text": "12pm"},
+		{"value": 13, "text": "1pm"},
+		{"value": 14, "text": "2pm"},
+		{"value": 15, "text": "3pm"},
+		{"value": 16, "text": "4pm"},
+		{"value": 17, "text": "5pm"},
+		{"value": 18, "text": "6pm"},
+		{"value": 19, "text": "7pm"},
+		{"value": 20, "text": "8pm"},
+		{"value": 21, "text": "9pm"},
+		{"value": 22, "text": "10pm"},
+		{"value": 23, "text": "1pm"}
+	]
+
+	consumption_not_set = 0
 
 	# Put string data
 	for device in devices:
-		buffertime = datetime.now() - timedelta(hours=1)
-		usageinbuffer = device.usage_set.filter(datetime__gt=buffertime)
-		device.status = "Tracking" if (usageinbuffer.count() > 0) else "Offline"
-		device.statusclass = "label-success" if (usageinbuffer.count() > 0) else "label-danger"
+		if not device.consumption:
+			device.status = "Set Wattage"
+			device.statusclass = "label-warning"
+			consumption_not_set += 1
+		else:
+			buffertime = datetime.now() - timedelta(hours=1)
+			usageinbuffer = device.usage_set.filter(datetime__gt=buffertime)
+			device.status = "Tracking" if (usageinbuffer.count() > 0) else "Offline"
+			device.statusclass = "label-success" if (usageinbuffer.count() > 0) else "label-danger"
 
 	for group_ in groups:
 		group_.members = group_.group.members if group_.group.members else 0
@@ -42,7 +77,12 @@ def dashboard(request):
 		"devices": devices,
 		"groups": groups,
 		"flash": getFlash(request),
-		"groups_json": groups_json
+		"groups_json": groups_json,
+		"appdb": appdb,
+		"dumbapps": dumbapps,
+		"days": ['Su', 'M', 'T', 'W', 'Th', 'Fr', 'Sa'],
+		"hours": hours,
+		"setconsumption": True if consumption_not_set > 0 else False
 		})
 
 @login_required(login_url='/')
@@ -132,3 +172,77 @@ def leave_community(request):
 
 	storeFlash(request, "You have successfully left %s."%community_name, "success")
 	return redirect('/dashboard/')
+
+@login_required(login_url='/')
+def appdb(request):
+	if request.method == "GET":
+		appdb = AppDB.objects.all()
+		for app in appdb:
+			app.typestring = "Smart Device" if app.type is "SMART" else "Non-Smart Appliance"
+		return render(request, "appdb.html", {
+			"flash": getFlash(request),
+			"appdb": appdb
+			})
+	else:
+		for x in ["name", "wattage"]:
+			if x not in request.POST:
+				storeFlash(request, "Unable to submit device, you need to fill in all the details.", "danger")
+				return redirect('/appdb/')
+		try:
+			new_device = AppDB(
+				name = request.POST.get('name'),
+				wattage = int(request.POST.get('wattage')),
+				type = "SMART" if request.POST.get('is_smart') else "DUMB")
+			new_device.save()
+		except Exception, e:
+			print e
+			storeFlash(request, "Unable to submit device, something went wrong!", "danger")
+			return redirect('/appdb/')
+
+	storeFlash(request, "Your application has been submitted! Thanks!", "success")
+	return redirect('/appdb/')
+
+@login_required(login_url="/")
+def add_appliance(request):
+	description = request.POST.get('description')
+	appdb = AppDB.objects.get(id=request.POST.get('class'))
+	schedule = ""
+	for x in ['Su', 'M', 'T', 'W', 'Th', 'Fr', 'Sa']:		
+		schedule += '1' if "day-"+x in request.POST else '0'
+	for x in xrange(1, 25):
+		schedule += '1' if "hour-"+str(x) in request.POST else '0'
+
+	try:
+		new_dumbdevice = DumbDevice(
+			user=request.user,
+			appdb=appdb,
+			description=description,
+			schedule=schedule,
+			linked=True)
+		new_dumbdevice.save()
+	except Exception, e:
+		print e
+		storeFlash(request, 'Something went wrong. We can\'t save that appliance.', 'danger')
+		return redirect('/dashboard/')
+
+	storeFlash(request, 'Your appliance has been added! Thanks!', 'success')
+	return redirect('/dashboard/')
+
+@login_required(login_url='/')
+def set_wattage(request):
+	for x in ['id', 'set-wattage']: 
+		if x not in request.POST:
+			print "not found ", x
+			storeFlash(request, "Something went wrong with your request, please try again.", "danger")
+			return redirect('/dashboard/')
+
+		try:
+			device = Device.objects.get(id=request.POST.get('id'))
+			device.consumption = request.POST.get('wattage')
+			device.save()
+		except Exception, e:
+			print e
+			storeFlash(request, "Something went wrong with your request, please try again.", "danger")
+			return redirect('/dashboard/')
+		storeFlash(request, "Wattage set. Thanks!", "success")
+		return redirect('/dashboard/')

@@ -1,6 +1,6 @@
 $(function() {
     // personal analytics
-    $('#usage-graph-personal').highcharts({
+    usageGraphPersonal_chart = $('#usage-graph-personal').highcharts({
         chart: {
             type: 'column'
         },
@@ -45,7 +45,7 @@ $(function() {
     });
 
     //contribution to community
-    $('#community-contribution').highcharts({
+    communityContribution_graph = $('#community-contribution').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -70,14 +70,11 @@ $(function() {
         series: [{
             type: 'pie',
             name: 'Energy Consumption Contribution',
-            data: [
-                ['You', 13.2],
-                ['Rest of the Community', 100 - 13.2]
-            ]
+            data: communityContribution
         }]
     });
     //community's global contribution
-    $('#community-contribution-global').highcharts({
+    communityContributionGlobal_chart = $('#community-contribution-global').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -102,10 +99,7 @@ $(function() {
         series: [{
             type: 'pie',
             name: 'Energy Consumption Contribution',
-            data: [
-                ['Your Community', 5.2],
-                ['Rest of the World', 100 - 5.2]
-            ]
+            data: communityContributionGlobal
         }]
     });
 });
