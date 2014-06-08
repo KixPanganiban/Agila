@@ -112,3 +112,9 @@ def user_leaderboard(display=10):
 
 def group_leaderboard(display=10):
 	return [group for group in GroupRanking.objects.order_by('rank')[:display]]
+
+def user_consumption_wrt_group(user, group, date_=date.today(), days_=None):
+	g = group_consumption_total(group, date_=date_, days_=days_)
+	u = user_consumption_total(user, date_=date_, days_=days_)
+
+	return (u / g) * 100
