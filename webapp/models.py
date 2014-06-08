@@ -1,7 +1,7 @@
 from django.db import models, transaction
 from agila import settings
 from django_facebook.models import FacebookCustomUser as User_
-
+from datetime import date, timedelta
 # Devices registered to user
 class Device(models.Model):
 	user = models.ForeignKey(User_, null=True)
@@ -192,7 +192,7 @@ class UserRanking(models.Model):
 			u.save()
 
 	@classmethod
-	def rank(date_=date.today(), days):
+	def rank(date_=date.today(), days=30):
 		from analytics import user_consumption_total
 		users = User_.objects.all()
 		
@@ -209,7 +209,7 @@ class UserRanking(models.Model):
 			UserRanking.add_or_update(r[0],i+1)
 
 class GroupRanking(models.Model):
-	group = models.ForeignKey(Group,unique=True)
+	group = models.ForeignKey(CustomGroup,unique=True)
 	rank = models.IntegerField()
 	
 	@classmethod
@@ -224,7 +224,7 @@ class GroupRanking(models.Model):
 			u.save()
 
 	@classmethod
-	def rank(date_=date.today(), days):
+	def rank(date_=date.today(), days=30):
 		from analytics import group_consumption_total
 		groups = User_.objects.all()
 		
