@@ -7,3 +7,4 @@ webclient/build
 node_modules
 *.sw[a-z]
 *.p
+.vagrant
