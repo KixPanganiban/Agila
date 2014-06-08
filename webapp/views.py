@@ -47,7 +47,10 @@ def dashboard(request):
 
 @login_required(login_url='/')
 def analytics(request):
-	return render(request, "dashboard-analytics.html")
+	groups = request.user.usergroup_set.all()
+	return render(request, "dashboard-analytics.html", {
+		"groups": groups
+		})
 
 @login_required(login_url='/')
 def link(request):
@@ -88,7 +91,7 @@ def join_community(request):
 	if (groups.count() > 0):
 		group = groups.get()
 		
-		user_groups = [group for group in request.user.usergroup_set.all()]
+		user_groups = request.user.usergroup_set.all()
 		if group in user_groups:
 			storeFlash(request, "You're already a member of that group!", "warning")
 			return redirect('/dashboard/')
