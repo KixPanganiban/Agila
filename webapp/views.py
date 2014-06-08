@@ -96,9 +96,18 @@ def dashboard(request):
 
 @login_required(login_url='/')
 def analytics(request):
+	from agila.analytics import user_consumption_total as uct
+	from agila.analytics import user_percentile as upercentile
+	user_consumption = uct(request.user)
+	user_consumption_today = uct(user=request.user, days_=1)
+	user_percentile = upercentile(request.user)
+
 	groups = request.user.usergroup_set.all()
 	return render(request, "dashboard-analytics.html", {
-		"groups": groups
+		"groups": groups,
+		"user_consumption": user_consumption,
+		"user_consumption_today": user_consumption_today,
+		"user_percentile": user_percentile
 		})
 
 @login_required(login_url='/')
@@ -184,13 +193,22 @@ def leave_community(request):
 
 @login_required(login_url='/')
 def appdb(request):
+	from agila.analytics import user_consumption_total as uct
+	from agila.analytics import user_percentile as upercentile
+	user_consumption = uct(request.user)
+	user_consumption_today = uct(user=request.user, days_=1)
+	user_percentile = upercentile(request.user)
+
 	if request.method == "GET":
 		appdb = AppDB.objects.all()
 		for app in appdb:
 			app.typestring = "Smart Device" if app.type is "SMART" else "Non-Smart Appliance"
 		return render(request, "appdb.html", {
 			"flash": getFlash(request),
-			"appdb": appdb
+			"appdb": appdb,
+			"user_consumption": user_consumption,
+			"user_consumption_today": user_consumption_today,
+			"user_percentile": user_percentile
 			})
 	else:
 		for x in ["name", "wattage"]:
