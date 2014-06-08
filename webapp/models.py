@@ -76,7 +76,7 @@ class CustomGroup(models.Model):
 
 # Surrogate table to link auth.User object with CustomGroup
 class UserGroup(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	user = models.ForeignKey(User_)
 	group = models.ForeignKey(CustomGroup)
 
 	class Meta:
@@ -101,7 +101,7 @@ class UserGroup(models.Model):
 
 # Variable-form table for user analytics
 class Analytics(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	user = models.ForeignKey(User_)
 	device = models.ForeignKey(Device, null=True)
 	key = models.CharField(max_length=100)
 	value = models.CharField(max_length=100)
@@ -175,3 +175,67 @@ class Usage(models.Model):
 			return True
 		except Exception, e:
 			logging.exception("error")
+
+class UserRanking(models.Model):
+	user = models.ForeignKey(User_,unique=True)
+	rank = models.IntegerField()
+	
+	@classmethod
+	def add_or_update(user, rank):
+		u = UserRanking.objects.filter(user=uesr)
+		if u.count() == 1:
+			u = u.get()
+			u.rank = rank
+			u.save()
+		else:
+			u = UserRanking(user=user, rank=rank)
+			u.save()
+
+	@classmethod
+	def rank(date_=date.today(), days):
+		from analytics import user_consumption_total
+		users = User_.objects.all()
+		
+		rankng = []
+
+		for user in users:
+			cons = user_consumption_total(user, date_=date_, days_=days)
+			rankng.append((user,cons))
+		
+		rankng = sorted(rankng, key= lambda score: score[1])
+
+		for i in range(len(rankng)):
+			r = rankng[i]
+			UserRanking.add_or_update(r[0],i+1)
+
+class GroupRanking(models.Model):
+	group = models.ForeignKey(Group,unique=True)
+	rank = models.IntegerField()
+	
+	@classmethod
+	def add_or_update(group, rank):
+		u = GroupRanking.objects.filter(group=group)
+		if u.count() == 1:
+			u = u.get()
+			u.rank = rank
+			u.save()
+		else:
+			u = GroupRanking(group=group, rank=rank)
+			u.save()
+
+	@classmethod
+	def rank(date_=date.today(), days):
+		from analytics import group_consumption_total
+		groups = User_.objects.all()
+		
+		rankng = []
+
+		for group in groups:
+			cons = group_consumption_total(group, date_=date_, days_=days)
+			rankng.append((group,cons))
+		
+		rankng = sorted(rankng, key= lambda score: score[1])
+
+		for i in range(len(rankng)):
+			r = rankng[i]
+			GroupRanking.add_or_update(r[0],i+1)
