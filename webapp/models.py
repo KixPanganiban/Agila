@@ -202,19 +202,19 @@ class UserRanking(models.Model):
 	rank = models.IntegerField()
 	
 	@classmethod
-	def add_or_update(user, rank):
-		u = UserRanking.objects.filter(user=uesr)
+	def add_or_update(cls, user, rank_):
+		u = cls.objects.filter(user=user)
 		if u.count() == 1:
 			u = u.get()
-			u.rank = rank
+			u.rank = rank_
 			u.save()
 		else:
-			u = UserRanking(user=user, rank=rank)
+			u = cls(user, rank_)
 			u.save()
 
 	@classmethod
-	def rank(date_=date.today(), days=30):
-		from analytics import user_consumption_total
+	def rank(cls, date_=date.today(), days=30):
+		from agila.analytics import user_consumption_total
 		users = User_.objects.all()
 		
 		rankng = []
@@ -226,26 +226,26 @@ class UserRanking(models.Model):
 		rankng = sorted(rankng, key= lambda score: score[1])
 
 		for i in range(len(rankng)):
-			r = rankng[i]
-			UserRanking.add_or_update(r[0],i+1)
+			user = rankng[i][0]
+			UserRanking.add_or_update(user,i+1)
 
 class GroupRanking(models.Model):
 	group = models.ForeignKey(CustomGroup,unique=True)
 	rank = models.IntegerField()
 	
 	@classmethod
-	def add_or_update(group, rank):
+	def add_or_update(cls, group, rank):
 		u = GroupRanking.objects.filter(group=group)
 		if u.count() == 1:
 			u = u.get()
 			u.rank = rank
 			u.save()
 		else:
-			u = GroupRanking(group=group, rank=rank)
+			u = GroupRanking(group, rank)
 			u.save()
 
 	@classmethod
-	def rank(date_=date.today(), days=30):
+	def rank(cls, date_=date.today(), days=30):
 		from analytics import group_consumption_total
 		groups = User_.objects.all()
 		

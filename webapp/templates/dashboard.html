@@ -16,12 +16,12 @@ Agila &rarr; Dashboard
 		<div class="well">
 			<strong>Your total consumption:</strong>
 			<ul>
-				<li><em><b>100 kWh</b> today</em></li>
-				<li><em><b>1.02</b> all-time</em></li>
-				<li><em>You rank 1st in global consumers.</em></li>
+				<li><em><b>{{user_consumption_today}}</b> wH today</em></li>
+				<li><em><b>{{user_consumption}}</b> all-time</em></li>
+				<li><em>You are in the top {{user_percentile}}% of global consumers.</em></li>
 			</ul>
 			<strong>...this translates to:</strong>
-			<p>Your carbon emission is enough to melt a glacier the size of your house.</p>
+			<p>Your carbon emission is enough to melt a glacier the size of an ice cube.</p>
 		</div>
 		<a href="/dashboard/analytics/" class="btn btn-info">View my usage analytics</a>
 		<hr/>

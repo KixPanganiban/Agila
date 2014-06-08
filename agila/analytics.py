@@ -95,14 +95,14 @@ def group_consumption_total(group, date_=date.today(), days_=None):
 
 def user_percentile(user, date_=date.today(), days_=None):
 	UserRanking.rank(date_,days_)
-	rank = UserRanking.objects.get(user)
+	rank = UserRanking.objects.get(user=user)
 	total = UserRanking.objects.count()
 
 	return rank / float(total)
 
 def group_percentile(group, date_=date.today(), days_=None):
 	GroupRanking.rank(date_,days_)
-	rank = UserRanking.objects.get(group)
+	rank = UserRanking.objects.get(group=group)
 	total = UserRanking.objects.count()
 
 	return rank / float(total)

@@ -54,6 +54,12 @@ def dashboard(request):
 		{"value": 23, "text": "1pm"}
 	]
 
+	from agila.analytics import user_consumption_total as uct
+	from agila.analytics import user_percentile as up
+	user_consumption = uct(request.user)
+	user_consumption_today = uct(user=request.user, days_=1)
+	user_percentile = up(user=request.user)
+
 	consumption_not_set = 0
 
 	# Put string data
@@ -74,6 +80,9 @@ def dashboard(request):
 	groups_json = json.dumps([group.name for group in CustomGroup.objects.all()])
 
 	return render(request, "dashboard-main.html", {
+		"user_consumption": user_consumption,
+		"user_consumption_today": user_consumption_today,
+		"user_percentile": user_percentile,
 		"devices": devices,
 		"groups": groups,
 		"flash": getFlash(request),
