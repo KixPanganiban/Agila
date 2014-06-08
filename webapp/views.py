@@ -263,13 +263,15 @@ def set_wattage(request):
 			storeFlash(request, "Something went wrong with your request, please try again.", "danger")
 			return redirect('/dashboard/')
 
-		try:
-			device = Device.objects.get(id=request.POST.get('id'))
-			device.consumption = request.POST.get('wattage')
-			device.save()
-		except Exception, e:
-			print e
-			storeFlash(request, "Something went wrong with your request, please try again.", "danger")
-			return redirect('/dashboard/')
-		storeFlash(request, "Wattage set. Thanks!", "success")
+	print json.dumps(request.POST)
+
+	try:
+		device = Device.objects.get(id=request.POST.get('id'))
+		device.consumption = request.POST.get('set-wattage')
+		device.save()
+	except Exception, e:
+		print e
+		storeFlash(request, "Something went wrong with your request, please try again.", "danger")
 		return redirect('/dashboard/')
+	storeFlash(request, "Wattage set. Thanks!", "success")
+	return redirect('/dashboard/')
