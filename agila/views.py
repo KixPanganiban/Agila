@@ -15,6 +15,9 @@ def firstuse(request):
 		for var in vars: 
 			if var not in data: return HttpResponse(json.dumps({"status":"error"}))
 
+		#check if token exists
+		if DeviceToken.objects.filter(token=data['token']) > 0:
+			return HttpResponse(json.dumps({"status":"already_exist"}))
 		return HttpResponse(json.dumps({"status":"ok"})) if Device.createWithToken(data['token'], data['mac'], data['os'], data['cores']) else HttpResponse(json.dumps({"status": "fail"}))
 
 	except Exception, e:
