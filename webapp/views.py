@@ -55,10 +55,10 @@ def dashboard(request):
 	]
 
 	from agila.analytics import user_consumption_total as uct
-	from agila.analytics import user_percentile as up
+	from agila.analytics import user_percentile as upercentile
 	user_consumption = uct(request.user)
 	user_consumption_today = uct(user=request.user, days_=1)
-	user_percentile = up(user=request.user)
+	user_percentile = upercentile(request.user)
 
 	consumption_not_set = 0
 

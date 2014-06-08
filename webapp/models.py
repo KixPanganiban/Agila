@@ -199,35 +199,38 @@ class Usage(models.Model):
 
 class UserRanking(models.Model):
 	user = models.ForeignKey(User_,unique=True)
-	rank = models.IntegerField()
+	rank = models.IntegerField(null=True)
 	
 	@classmethod
-	def add_or_update(cls, user, rank_):
-		u = cls.objects.filter(user=user)
-		if u.count() == 1:
-			u = u.get()
+	def add_or_update(cls, user, rank_):		
+		u = UserRanking.objects.filter(user=user)
+		if len(u) > 0:
+			u = u[0]
 			u.rank = rank_
 			u.save()
-		else:
-			u = cls(user, rank_)
+		else:	
+			u = UserRanking(user=user, rank=rank_)
 			u.save()
+		print "save ", u.id, u.rank
 
 	@classmethod
-	def rank(cls, date_=date.today(), days=30):
+	def getRank(cls, date_=date.today(), days=30):
 		from agila.analytics import user_consumption_total
 		users = User_.objects.all()
 		
+		print users
+
 		rankng = []
 
 		for user in users:
 			cons = user_consumption_total(user, date_=date_, days_=days)
 			rankng.append((user,cons))
-		
+
 		rankng = sorted(rankng, key= lambda score: score[1])
 
 		for i in range(len(rankng)):
-			user = rankng[i][0]
-			UserRanking.add_or_update(user,i+1)
+			UserRanking.add_or_update(rankng[i][0],i+1)
+
 
 class GroupRanking(models.Model):
 	group = models.ForeignKey(CustomGroup,unique=True)
